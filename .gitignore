@@ -4,3 +4,8 @@ obj
 
 # mstest test results
 TestResults
+*.suo
+*.user
+packages/*
+!packages/repositories.config
+web.config
