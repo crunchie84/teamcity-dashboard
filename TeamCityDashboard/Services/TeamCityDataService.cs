@@ -25,13 +25,38 @@ namespace TeamCityDashboard.Services
       this.Password = password;
     }
 
-    private const string URL_PROJECTLIST = @"/httpAuth/app/rest/projects";
-    private const string URL_PROJECTDETAILS = @"/httpAuth/app/rest/projects/id:{0}";
+    /// <summary>
+    /// url to retrieve list of projects in TeamCity
+    /// </summary>
+    private const string URL_PROJECTS_LIST = @"/httpAuth/app/rest/projects";
+    /// <summary>
+    /// url to retrieve details of given {0} project (buildtypes etc)
+    /// </summary>
+    private const string URL_PROJECT_DETAILS = @"/httpAuth/app/rest/projects/id:{0}";
 
+    /// <summary>
+    /// retrieve the first 100 builds of the given buildconfig and retrieve the status of it
+    /// </summary>
+    private const string URL_BUILDS_LIST = @"/httpAuth/app/rest/buildTypes/id:{0}/builds";
+
+    /// <summary>
+    /// url to retrieve the changes commited in the given {0} buildrunId
+    /// </summary>
+    private const string URL_BUILD_CHANGES = @"/httpAuth/app/rest/changes?build=id:{0}";
+
+    /// <summary>
+    /// Url to retrieve the details of the given {0} changeId
+    /// </summary>
+    private const string URL_CHANGE_DETAILS = @"/httpAuth/app/rest/changes/id:{0}";
+
+    /// <summary>
+    /// url to retrieve the emailaddress of the given {0} userId
+    /// </summary>
+    private const string URL_USER_EMAILADDRESS = @"/httpAuth/app/rest/users/id:{0}/email";
 
     public IEnumerable<IProject> GetActiveProjects()
     {
-      XmlDocument projectsPageContent = GetPageContents(URL_PROJECTLIST);
+      XmlDocument projectsPageContent = GetPageContents(URL_PROJECTS_LIST);
       if (projectsPageContent == null)
         yield break;
 
@@ -52,7 +77,7 @@ namespace TeamCityDashboard.Services
     private IProject ParseProjectDetails(string projectId, string projectName)
     {
       //determine details, archived? buildconfigs
-      XmlDocument projectDetails = GetPageContents(string.Format(URL_PROJECTDETAILS, projectId));
+      XmlDocument projectDetails = GetPageContents(string.Format(URL_PROJECT_DETAILS, projectId));
       if (projectDetails == null)
         return null;
 
@@ -60,23 +85,83 @@ namespace TeamCityDashboard.Services
         return null;//not needed
 
       List<IBuildConfig> buildConfigs = new List<IBuildConfig>();
-      foreach (XmlElement buildType in projectDetails.SelectNodes("//buildType"))
+      foreach (XmlElement buildType in projectDetails.SelectNodes("project/buildTypes/buildType"))
       {
-        buildConfigs.Add(new BuildConfig{
-          Id = buildType.GetAttribute("id"),
-          Name = buildType.GetAttribute("name"),
-          Url = buildType.GetAttribute("webUrl"),
-          CurrentBuildIsSuccesfull = true,//TODO implement details fetching
-          PossibleBuildBreakerEmailAddress = "mark@q42.nl"//TODO IMPLEMENT 
-        });
+        buildConfigs.Add(ParseBuildConfigDetails(buildType.GetAttribute("id"), buildType.GetAttribute("name")));
       }
 
-      return new Project{ 
-        Id = projectId, 
-        Name = projectName, 
+      return new Project
+      {
+        Id = projectId,
+        Name = projectName,
         Url = projectDetails.DocumentElement.GetAttribute("webUrl"),
         BuildConfigs = buildConfigs
       };
+    }
+
+    private IBuildConfig ParseBuildConfigDetails(string id, string name)
+    {
+      ///retrieve details of last 100 builds and find out if the last (=first row) was succesfull or iterate untill we found the first breaker?
+
+      XmlDocument buildResultsDoc = GetPageContents(string.Format(URL_BUILDS_LIST, id));
+      XmlElement lastBuild = buildResultsDoc.DocumentElement.FirstChild as XmlElement;
+      bool currentBuildSuccesfull = lastBuild != null ? lastBuild.GetAttribute("status") == "SUCCESS" : true;//default to true
+
+      string buildBreaker = string.Empty;
+      if (!currentBuildSuccesfull)
+      {
+        XmlNode lastSuccessfullBuild = buildResultsDoc.DocumentElement.SelectSingleNode("build[@status='SUCCESS']");
+        if (lastSuccessfullBuild == null)
+        {
+          buildBreaker = "unknown-too-long-ago";
+        }
+        else
+        {
+          XmlElement breakingBuild = lastSuccessfullBuild.PreviousSibling as XmlElement;
+          if (breakingBuild == null)
+            buildBreaker = "no-breaking-build-after-succes-should-not-happen";
+          else
+            buildBreaker = string.Join(",", ParseBuildBreakerDetails(breakingBuild.GetAttribute("id")).Distinct().ToArray());
+        }
+      }
+
+      return new BuildConfig
+      {
+        Id = id,
+        Name = name,
+        Url = new Uri(string.Format("{0}/viewType?html?buildTypeId={1}", BaseUrl, id)).ToString(),
+        CurrentBuildIsSuccesfull = currentBuildSuccesfull,
+        PossibleBuildBreakerEmailAddress = buildBreaker
+      };
+    }
+
+    /// <summary>
+    /// retrieve the emailaddress of the user who changed something in the given buildId because he most likely broke it
+    /// </summary>
+    /// <param name="buildId"></param>
+    /// <returns></returns>
+    private IEnumerable<string> ParseBuildBreakerDetails(string buildId)
+    {
+      //retrieve changes
+      XmlDocument buildChangesDoc = GetPageContents(string.Format(URL_BUILD_CHANGES, buildId));
+      foreach (XmlElement el in buildChangesDoc.SelectNodes("//change"))
+      {
+        //retrieve change details
+        string changeId = el.GetAttribute("id");
+        if (string.IsNullOrEmpty(changeId))
+          throw new ArgumentNullException(string.Format("@id of change within buildId {0} should not be NULL", buildId));
+
+        //retrieve userid who changed something//details
+        XmlDocument changeDetailsDoc = GetPageContents(string.Format(URL_CHANGE_DETAILS, changeId));
+        string userId = (changeDetailsDoc.SelectSingleNode("change/user") as XmlElement).GetAttribute("id");
+        if (userId == null)
+          throw new ArgumentNullException(string.Format("No userId given in changeId {0}", changeId));
+
+        //retrieve email
+        string email = GetContents(string.Format(URL_USER_EMAILADDRESS, userId));
+        if (!string.IsNullOrEmpty(email))
+          yield return email;
+      }
     }
 
     /// <summary>
@@ -87,28 +172,39 @@ namespace TeamCityDashboard.Services
     /// <remarks>original code on http://www.stickler.de/en/information/code-snippets/httpwebrequest-basic-authentication.aspx</remarks>
     private XmlDocument GetPageContents(string relativeUrl)
     {
-      Uri uri = new Uri(string.Format("{0}{1}", BaseUrl, relativeUrl));
-      WebRequest myWebRequest = HttpWebRequest.Create(uri);
+      XmlDocument result = new XmlDocument();
+      result.LoadXml(GetContents(relativeUrl));
+      return result;
+    }
 
-      HttpWebRequest myHttpWebRequest = (HttpWebRequest)myWebRequest;
-
-      NetworkCredential myNetworkCredential = new NetworkCredential(UserName, Password);
-      CredentialCache myCredentialCache = new CredentialCache();
-      myCredentialCache.Add(uri, "Basic", myNetworkCredential);
-
-      myHttpWebRequest.PreAuthenticate = true;
-      myHttpWebRequest.Credentials = myCredentialCache;
-
-      using (WebResponse myWebResponse = myWebRequest.GetResponse())
+    private string GetContents(string relativeUrl)
+    {
+      try
       {
-        using (Stream responseStream = myWebResponse.GetResponseStream())
+        Uri uri = new Uri(string.Format("{0}{1}", BaseUrl, relativeUrl));
+        WebRequest myWebRequest = HttpWebRequest.Create(uri);
+
+        HttpWebRequest myHttpWebRequest = (HttpWebRequest)myWebRequest;
+
+        NetworkCredential myNetworkCredential = new NetworkCredential(UserName, Password);
+        CredentialCache myCredentialCache = new CredentialCache();
+        myCredentialCache.Add(uri, "Basic", myNetworkCredential);
+
+        myHttpWebRequest.PreAuthenticate = true;
+        myHttpWebRequest.Credentials = myCredentialCache;
+
+        using (WebResponse myWebResponse = myWebRequest.GetResponse())
         {
-          StreamReader myStreamReader = new StreamReader(responseStream, Encoding.Default);
-          string content = myStreamReader.ReadToEnd();
-          XmlDocument result = new XmlDocument();
-          result.LoadXml(content);
-          return result;
+          using (Stream responseStream = myWebResponse.GetResponseStream())
+          {
+            StreamReader myStreamReader = new StreamReader(responseStream, Encoding.Default);
+            return myStreamReader.ReadToEnd();
+          }
         }
+      }
+      catch (Exception e)
+      {
+        throw new HttpException(string.Format("Error while retrieving url '{0}': {1}", relativeUrl, e.Message), e);
       }
     }
   }
