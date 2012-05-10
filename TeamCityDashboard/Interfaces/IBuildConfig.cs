@@ -11,6 +11,6 @@ namespace TeamCityDashboard.Interfaces
     string Name { get; }
     string Url { get; }
     bool CurrentBuildIsSuccesfull { get; }
-    string PossibleBuildBreakerEmailAddress { get; }
+    IEnumerable<string> PossibleBuildBreakerEmailAddresses { get; }
   }
 }

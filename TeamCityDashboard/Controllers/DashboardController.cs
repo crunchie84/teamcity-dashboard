@@ -20,12 +20,12 @@ namespace TeamCityDashboard.Controllers
         ConfigurationManager.AppSettings["teamcity.baseUrl"],
         ConfigurationManager.AppSettings["teamcity.username"],
         ConfigurationManager.AppSettings["teamcity.password"]
-      );  
+      );
     }
 
-    [UrlRoute(Name = "Home", Path = "")]
+    [UrlRoute(Name = "Data", Path = "data")]
     [HttpGet()]
-    public ActionResult Index()
+    public ActionResult Data()
     {
       return new JsonResult()
       {
@@ -34,5 +34,13 @@ namespace TeamCityDashboard.Controllers
         Data = DataService.GetActiveProjects()
       };
     }
+
+    [UrlRoute(Name = "Home", Path = "")]
+    [HttpGet()]
+    public ActionResult Index()
+    {
+      return View();
+    }
+
   }
 }

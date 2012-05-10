@@ -126,21 +126,21 @@ namespace TeamCityDashboard.Services
       XmlElement lastBuild = buildResultsDoc.DocumentElement.FirstChild as XmlElement;
       bool currentBuildSuccesfull = lastBuild != null ? lastBuild.GetAttribute("status") == "SUCCESS" : true;//default to true
 
-      string buildBreaker = string.Empty;
+      List<string> buildBreakerEmailaddress = new List<string>();
       if (!currentBuildSuccesfull)
       {
         XmlNode lastSuccessfullBuild = buildResultsDoc.DocumentElement.SelectSingleNode("build[@status='SUCCESS']");
         if (lastSuccessfullBuild == null)
         {
-          buildBreaker = "unknown-too-long-ago";
+          buildBreakerEmailaddress.Add("unknown-too-long-ago");
         }
         else
         {
           XmlElement breakingBuild = lastSuccessfullBuild.PreviousSibling as XmlElement;
           if (breakingBuild == null)
-            buildBreaker = "no-breaking-build-after-succes-should-not-happen";
+            buildBreakerEmailaddress.Add("no-breaking-build-after-succes-should-not-happen");
           else
-            buildBreaker = string.Join(",", ParseBuildBreakerDetails(breakingBuild.GetAttribute("id")).Distinct().ToArray());
+            buildBreakerEmailaddress = ParseBuildBreakerDetails(breakingBuild.GetAttribute("id")).Distinct().ToList();
         }
       }
 
@@ -150,7 +150,7 @@ namespace TeamCityDashboard.Services
         Name = name,
         Url = new Uri(string.Format("{0}/viewType?html?buildTypeId={1}", BaseUrl, id)).ToString(),
         CurrentBuildIsSuccesfull = currentBuildSuccesfull,
-        PossibleBuildBreakerEmailAddress = buildBreaker
+        PossibleBuildBreakerEmailAddresses = buildBreakerEmailaddress
       };
     }
 
@@ -179,7 +179,7 @@ namespace TeamCityDashboard.Services
         //retrieve email
         string email = GetContents(string.Format(URL_USER_EMAILADDRESS, userId));
         if (!string.IsNullOrEmpty(email))
-          yield return email;
+          yield return email.ToLower().Trim();
       }
     }
 
