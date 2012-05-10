@@ -40,6 +40,11 @@ namespace TeamCityDashboard.Services
     private const string URL_BUILDS_LIST = @"/httpAuth/app/rest/buildTypes/id:{0}/builds";
 
     /// <summary>
+    /// retrieve details of the given build ({0}) and verify that the /buildType/settings/property[@name='allowExternalStatus'] == 'true'
+    /// </summary>
+    private const string URL_BUILD_DETAILS = @"/httpAuth/app/rest/buildTypes/id:{0}";
+
+    /// <summary>
     /// url to retrieve the changes commited in the given {0} buildrunId
     /// </summary>
     private const string URL_BUILD_CHANGES = @"/httpAuth/app/rest/changes?build=id:{0}";
@@ -54,6 +59,10 @@ namespace TeamCityDashboard.Services
     /// </summary>
     private const string URL_USER_EMAILADDRESS = @"/httpAuth/app/rest/users/id:{0}/email";
 
+    /// <summary>
+    /// retrieve the list of active projects which have at least one visible buildconfig
+    /// </summary>
+    /// <returns></returns>
     public IEnumerable<IProject> GetActiveProjects()
     {
       XmlDocument projectsPageContent = GetPageContents(URL_PROJECTS_LIST);
@@ -87,8 +96,13 @@ namespace TeamCityDashboard.Services
       List<IBuildConfig> buildConfigs = new List<IBuildConfig>();
       foreach (XmlElement buildType in projectDetails.SelectNodes("project/buildTypes/buildType"))
       {
-        buildConfigs.Add(ParseBuildConfigDetails(buildType.GetAttribute("id"), buildType.GetAttribute("name")));
+        var buildConfigDetails = ParseBuildConfigDetails(buildType.GetAttribute("id"), buildType.GetAttribute("name"));
+        if(buildConfigDetails != null)
+          buildConfigs.Add(buildConfigDetails);
       }
+
+      if (buildConfigs.Count == 0)
+        return null;//do not report 'empty' projects'
 
       return new Project
       {
@@ -101,8 +115,13 @@ namespace TeamCityDashboard.Services
 
     private IBuildConfig ParseBuildConfigDetails(string id, string name)
     {
-      ///retrieve details of last 100 builds and find out if the last (=first row) was succesfull or iterate untill we found the first breaker?
+      //do we need to show this buildCOnfig?
+      XmlDocument buildConfigDetails = GetPageContents(string.Format(URL_BUILD_DETAILS, id));
+      XmlElement externalStatusEl = buildConfigDetails.SelectSingleNode("buildType/settings/property[@name='allowExternalStatus']") as XmlElement;
+      if(externalStatusEl == null || externalStatusEl.GetAttribute("value") == "false")
+        return null;//no external status visible
 
+      ///retrieve details of last 100 builds and find out if the last (=first row) was succesfull or iterate untill we found the first breaker?
       XmlDocument buildResultsDoc = GetPageContents(string.Format(URL_BUILDS_LIST, id));
       XmlElement lastBuild = buildResultsDoc.DocumentElement.FirstChild as XmlElement;
       bool currentBuildSuccesfull = lastBuild != null ? lastBuild.GetAttribute("status") == "SUCCESS" : true;//default to true
