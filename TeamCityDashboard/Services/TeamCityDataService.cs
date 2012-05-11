@@ -148,7 +148,7 @@ namespace TeamCityDashboard.Services
       {
         Id = id,
         Name = name,
-        Url = new Uri(string.Format("{0}/viewType?html?buildTypeId={1}", BaseUrl, id)).ToString(),
+        Url = new Uri(string.Format("{0}/viewType.html?buildTypeId={1}&tab=buildTypeStatusDiv", BaseUrl, id)).ToString(),
         CurrentBuildIsSuccesfull = currentBuildSuccesfull,
         PossibleBuildBreakerEmailAddresses = buildBreakerEmailaddress
       };

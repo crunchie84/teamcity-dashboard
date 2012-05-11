@@ -8,63 +8,68 @@
   <script src="Scripts/jquery.masonry.min.js"></script>
   
   <script type="text/javascript">
-    
     function loadData(){
+      console.log("going to reload data");
       $.get("data", function (data) {
         var $containerEl = $('div[data-id="container"]');
         $containerEl.empty();    //remove current elements
-        $containerEl.removeClass('masonry');
-        $containerEl.removeAttr('style');
+        $containerEl.masonry({
+          itemSelector: '.project',
+          isFitWidth: true,
+          isAnimated: true,
+          animationOptions: {
+            duration: 750,
+            easing: 'linear',
+            queue: false,
+            isAnimatedFromBottom: true
+          }
+        });
 
         $.each(data, function (index, projectDetails) {
+          //create project element
+          var $project = $("<div>", {
+            'class': "project",
+            'id': projectDetails.Id
+          });
+          $project.append('<h1><a href="' + projectDetails.Url + '">' + projectDetails.Name + '</a></h1>');
+
           //project
-          var failingBuildConfig = null;
           for (idx in projectDetails.BuildConfigs) {
             if (!projectDetails.BuildConfigs[idx].CurrentBuildIsSuccesfull) {
-              failingBuildConfig = projectDetails.BuildConfigs[idx];
-              break;
+              $project.addClass("failing");
+              var failingBuildConfig = projectDetails.BuildConfigs[idx];
+
+              //append failing build details
+              $failingBuildEl = $("<div>", { 'class': "failing-build", 'id': failingBuildConfig.Id });
+              $failingBuildEl.append('<h2><a href="' + failingBuildConfig.Url + '">' + failingBuildConfig.Name + '</a></h2>');
+
+              var $breakersEl = $("<div>", { 'class': "build-breakers" });
+              for (idx in failingBuildConfig.PossibleBuildBreakerEmailAddresses) {
+                var emailHash = $().crypt({
+                  method: 'md5',
+                  source: failingBuildConfig.PossibleBuildBreakerEmailAddresses[idx]
+                });
+                $breakersEl.append('<figure class="build-breaker"><img src="http://www.gravatar.com/avatar/' + emailHash + '" /><figcaption>Build Breaker?</figcaption></figure>');
+              }
+              $failingBuildEl.append($breakersEl);
+
+              //now add failing build to project div
+              $project.append($failingBuildEl);
             }
           }
-          //create project element
-          var $project = $("<div>", { 
-            'class': "project " + (failingBuildConfig == null ? "success" : "failing"),
-            'id' : projectDetails.Id
-          });
-          $project.append('<h1>' + projectDetails.Name + '</h1>');
 
-          //if not building - calculate gravatar hash
-          if (failingBuildConfig != null) {
-            //append details of project which is borked
-            $project.append('<p>' + failingBuildConfig.Name + '</p>');
-
-            //append image of build breaker
-            for(idx in failingBuildConfig.PossibleBuildBreakerEmailAddresses){
-              var emailHash = $().crypt({
-                method: 'md5',
-                source: failingBuildConfig.PossibleBuildBreakerEmailAddresses[idx]
-              });
-              $project.append('<figure><img src="http://www.gravatar.com/avatar/' + emailHash + '" class="build-breaker"/><figcaption>Build Breaker?</figcaption></figure>');
-            }
-          }
           $containerEl.append($project);
         });
 
         //now masonry the whole lot
-        $containerEl.masonry({
-          itemSelector : '.project',
-          isFitWidth: true,
-  //        isAnimated: true,
-  //        animationOptions: {
-  //          duration: 750,
-  //          easing: 'linear',
-  //          queue: false
-  //        } 
-        });  
+        $containerEl.masonry('reload');
       });
+      
+      window.setTimeout(loadData, 30 * 1000);//reload ourselves in 30 seconds
     };
     
     //hit it 
-    window.setInterval(loadData, 30 * 1000);//refresh every 30 secs
+    loadData();
   </script>
   <style type="text/css">
     body {
@@ -78,12 +83,11 @@
       color: #FFF;
     }
     
-    img.build-breaker
+    figure
     {
-      width: 80px;
-      height: 80px;
+      margin: 0;
     }
-
+        
     .project {
       -moz-border-radius: 20px;
       -webkit-border-radius: 20px;
@@ -94,6 +98,7 @@
       margin: 10px;
       float: left;
       width: 270px;
+      background: #407A39; /*default = green*/
     }
 
     .project > h1 {
@@ -102,22 +107,48 @@
       font-size: 1.1em;
       text-transform: uppercase;
     }
-
-    .project > p {
+    .project .failing-build h2 a:before
+    {
+      content: "Broken: ";
+    }    
+    .project .failing-build h2 {
       font-weight: normal;
       font-size: 0.7em;
+    }
+    .project .failing-build h2 a{
       color: #bbb;
     }
-
-    .project.success
-     {
-      background: #407A39;
-    }    
+   
     .project.failing{
       background: #AF0E01;
       border-color: #650801;
     }
+
        
+    .build-breakers
+    {
+      clear: both;
+    }
+       
+    .build-breaker
+    {
+      float: left;
+      width: 80px;
+      overflow: hidden;
+      margin-right: 0.5em;
+    }
+
+    .build-breaker img
+    {
+      width: 80px;
+      height: 80px;
+    }
+   
+    .build-breaker figcaption
+    {
+      font-size: 0.75em;
+    }    
+
     .wrapper{
       width: 90%;
       margin: auto;
@@ -125,10 +156,6 @@
   </style>
 </head>
 <body>
-  <div class="wrapper" data-id="container">
-    
-
-    <!--<script type="text/javascript" src="http://teamcity.q42.net/externalStatus.html?js=1"></script>-->
-  </div>
+  <div class="wrapper" data-id="container" />
 </body>
 </html>
