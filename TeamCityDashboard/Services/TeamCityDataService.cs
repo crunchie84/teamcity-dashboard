@@ -18,12 +18,21 @@ namespace TeamCityDashboard.Services
     private readonly string UserName;
     private readonly string Password;
 
+    private static ICacheService CacheService = null;
+
     public TeamCityDataService(string baseUrl, string username, string password)
     {
       this.BaseUrl = baseUrl;
       this.UserName = username;
       this.Password = password;
+      if (CacheService == null)
+        CacheService = new WebCacheService();
     }
+
+    /// <summary>
+    /// Duration to cache some things which almost never change
+    /// </summary>
+    private const int CACHE_DURATION = 3 * 60 * 60;//3 hours
 
     /// <summary>
     /// url to retrieve list of projects in TeamCity
@@ -97,7 +106,7 @@ namespace TeamCityDashboard.Services
       foreach (XmlElement buildType in projectDetails.SelectNodes("project/buildTypes/buildType"))
       {
         var buildConfigDetails = ParseBuildConfigDetails(buildType.GetAttribute("id"), buildType.GetAttribute("name"));
-        if(buildConfigDetails != null)
+        if (buildConfigDetails != null)
           buildConfigs.Add(buildConfigDetails);
       }
 
@@ -116,10 +125,7 @@ namespace TeamCityDashboard.Services
     private IBuildConfig ParseBuildConfigDetails(string id, string name)
     {
       //do we need to show this buildCOnfig?
-      XmlDocument buildConfigDetails = GetPageContents(string.Format(URL_BUILD_DETAILS, id));
-      XmlElement externalStatusEl = buildConfigDetails.SelectSingleNode("buildType/settings/property[@name='allowExternalStatus']") as XmlElement;
-      if(externalStatusEl == null || externalStatusEl.GetAttribute("value") == "false")
-        return null;//no external status visible
+      bool isVisibleExternally = CacheService.Get<ProjectVisible>("build-visible-widgetinterface-" + id, () => IsBuildVisibleOnExternalWidgetInterface(id), CACHE_DURATION).Visible;
 
       ///retrieve details of last 100 builds and find out if the last (=first row) was succesfull or iterate untill we found the first breaker?
       XmlDocument buildResultsDoc = GetPageContents(string.Format(URL_BUILDS_LIST, id));
@@ -140,7 +146,11 @@ namespace TeamCityDashboard.Services
           if (breakingBuild == null)
             buildBreakerEmailaddress.Add("no-breaking-build-after-succes-should-not-happen");
           else
-            buildBreakerEmailaddress = ParseBuildBreakerDetails(breakingBuild.GetAttribute("id")).Distinct().ToList();
+            buildBreakerEmailaddress = CacheService.Get<IEnumerable<string>>(
+                "buildbreakers-build-" + breakingBuild.GetAttribute("id"),
+                () => ParseBuildBreakerDetails(breakingBuild.GetAttribute("id")),
+                CACHE_DURATION
+              ).Distinct().ToList();
         }
       }
 
@@ -151,6 +161,16 @@ namespace TeamCityDashboard.Services
         Url = new Uri(string.Format("{0}/viewType.html?buildTypeId={1}&tab=buildTypeStatusDiv", BaseUrl, id)).ToString(),
         CurrentBuildIsSuccesfull = currentBuildSuccesfull,
         PossibleBuildBreakerEmailAddresses = buildBreakerEmailaddress
+      };
+    }
+
+    private ProjectVisible IsBuildVisibleOnExternalWidgetInterface(string id)
+    {
+      XmlDocument buildConfigDetails = GetPageContents(string.Format(URL_BUILD_DETAILS, id));
+      XmlElement externalStatusEl = buildConfigDetails.SelectSingleNode("buildType/settings/property[@name='allowExternalStatus']") as XmlElement;
+      return new ProjectVisible
+      {
+        Visible = externalStatusEl != null && externalStatusEl.GetAttribute("value") == "true"//no external status visible
       };
     }
 
@@ -177,10 +197,15 @@ namespace TeamCityDashboard.Services
           throw new ArgumentNullException(string.Format("No userId given in changeId {0}", changeId));
 
         //retrieve email
-        string email = GetContents(string.Format(URL_USER_EMAILADDRESS, userId));
+        string email = CacheService.Get<string>("user-email-" + userId, () => GetUserEmailAddress(userId), CACHE_DURATION);
         if (!string.IsNullOrEmpty(email))
           yield return email.ToLower().Trim();
       }
+    }
+
+    private string GetUserEmailAddress(string userId)
+    {
+      return GetContents(string.Format(URL_USER_EMAILADDRESS, userId));
     }
 
     /// <summary>
