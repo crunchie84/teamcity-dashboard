@@ -1,8 +1,7 @@
 ﻿<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
 <html>
 <head>
-  <title>Q42 Continouos Integration Status</title>
-  <!--<meta http-equiv="refresh" content="30">-->
+  <title>TeamCity Continouos Integration Status</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="Scripts/jquery.crypt.js"></script>
   <script src="Scripts/jquery.masonry.min.js"></script>
@@ -45,11 +44,12 @@
 
               var $breakersEl = $("<div>", { 'class': "build-breakers" });
               for (idx in failingBuildConfig.PossibleBuildBreakerEmailAddresses) {
+                var email = failingBuildConfig.PossibleBuildBreakerEmailAddresses[idx];
                 var emailHash = $().crypt({
                   method: 'md5',
-                  source: failingBuildConfig.PossibleBuildBreakerEmailAddresses[idx]
+                  source: email
                 });
-                $breakersEl.append('<figure class="build-breaker"><img src="http://www.gravatar.com/avatar/' + emailHash + '" /><figcaption>Build Breaker?</figcaption></figure>');
+                $breakersEl.append('<figure class="build-breaker"><img src="http://www.gravatar.com/avatar/' + emailHash + '" alt="' + email + '" title="' + email + '"/><figcaption>Build Breaker?</figcaption></figure>');
               }
               $failingBuildEl.append($breakersEl);
 
