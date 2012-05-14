@@ -10,3 +10,5 @@ packages/*
 !packages/repositories.config
 web.config
 *.Publish.xml
+
+*.ttf

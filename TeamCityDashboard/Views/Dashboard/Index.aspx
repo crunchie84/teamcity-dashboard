@@ -1,166 +1,156 @@
 ﻿<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
-<html>
-<head>
-  <title>TeamCity Continouos Integration Status</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script src="Scripts/jquery.crypt.js"></script>
-  <script src="Scripts/jquery.masonry.min.js"></script>
+<!doctype html>
+<title>Q42 Continouos Integration</title>
+
+<meta name=apple-touch-fullscreen content=yes>
+<meta name=apple-mobile-web-app-capable content=yes>
+<meta name=viewport content="user-scalable=no,initial-scale=1.0">
+
+<link rel=apple-touch-icon href=images/q42.png>
+<link rel=apple-touch-startup-image href=images/black.png>
+
+<link rel=stylesheet href=css/styles.css>
+
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/jquery.crypt.js"></script>
+<script src="scripts/metro-grid.js"></script>
+
+<script>
+var lastStr = '';
+function loadData(layout)
+{
+  $.getJSON("data").done(function (data)
+  {
+    // // Random bugs!
+    // var p = data[Math.floor(Math.random() * data.length)];
+    // console.log(p);
+    // p.BuildConfigs[Math.floor(Math.random() * p.BuildConfigs.length)].CurrentBuildIsSuccesfull = false;
+
+    var str = JSON.stringify(data);
+    if (str == lastStr) return; // nothing changed
+    lastStr = str;
+
+    var $failing = $('#failing');
+    var $successful = $('#successful');
+    $failing.find('.item').remove();
+    $successful.find('.item').remove();
+
+    // WARNING: mutating array!
+    data.sort(function (x, y)
+    {
+      return x.BuildConfigs.length == y.BuildConfigs.length
+          ? x.Name < y.Name ? -1 : 0
+          : x.BuildConfigs.length > y.BuildConfigs.length ? -1 : 1;
+    });
+
+    $.each(data, function (_, project)
+    {
+      var name = project.Name;
+
+      // Top secret!!1!
+      // if (name.indexOf("hilips") >= 0)
+      //   name = "Jeweetwel";
+
+      var $a = $('<a href="' + project.Url + '" id=' + project.Id + ' class="item">');
+      var $text = $('<div class="item-text">');
+      var $extraText = $('<div class=extra-text>');
+      $a
+        .append($text)
+        .append($extraText);
+
+      var failingSteps = project.BuildConfigs.filter(function (s) { return !s.CurrentBuildIsSuccesfull });
+
+      if (failingSteps.length)
+      {
+        $a.addClass('failing');
+        $text.append('<p><span class=large>' + name + '</p>');
+
+        var allBreakers = [];
+
+        $.each(failingSteps, function (_, step)
+        {
+          $extraText.append('<p id=' + step.Id + ' class=small>'
+                       + '<a href="' + step.Url + '">' + step.Name + '</a></p>');
+
+          var $breakers = $('<div class=item-images>');
+          var breakers = step.PossibleBuildBreakerEmailAddresses;
+          $.each(breakers, function (_, email)
+          {
+            var emailHash = $().crypt({ method: 'md5', source: email });
+            var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=250';
+
+            if (allBreakers.indexOf(email) >= 0) return;
+            allBreakers.push(email);
+
+            $breakers
+              .append('<img src=' + url + ' class='
+                     + (breakers.length > 1 ? 'half-size' : 'full-size')
+                     + '>');
+          })
+          if (breakers.length % 2 == 1 && breakers.length > 1)
+            $breakers
+              .append('<img src=images/transparent.gif class=half-size>');
+
+          $a.prepend($breakers);
+        });
+      }
+      else
+      {
+        $a.addClass('successful')
+        $text
+          .append('<p class=large>' + name + '</p>')
+          .append('<p class=small>' + project.BuildConfigs.length + ' build '
+                  + (project.BuildConfigs.length > 1 ? 'steps' : 'step')
+                  + '</p>');
+
+        $.each(project.BuildConfigs, function (_, step)
+        {
+          $extraText.append('<p id=' + step.Id + ' class=small>'
+                       + '<a href="' + step.Url + '">' + step.Name + '</a></p>');
+        });
+      }
+
+
+      if (failingSteps.length)
+      //if (project.BuildConfigs.length > 1)
+        $failing.find('.column-container').append($a);
+      else
+        $successful.find('.column-container').append($a);
+    });
+
+    layout();
+  });
   
-  <script type="text/javascript">
-    function loadData(){
-      console.log("going to reload data");
-      $.get("data", function (data) {
-        var $containerEl = $('div[data-id="container"]');
-        $containerEl.empty();    //remove current elements
-        $containerEl.masonry({
-          itemSelector: '.project',
-          isFitWidth: true,
-          isAnimated: true,
-          animationOptions: {
-            duration: 750,
-            easing: 'linear',
-            queue: false,
-            isAnimatedFromBottom: true
-          }
-        });
+  window.setTimeout(loadData.bind(this, layout), 5 * 1000);
+};
 
-        $.each(data, function (index, projectDetails) {
-          //create project element
-          var $project = $("<div>", {
-            'class': "project",
-            'id': projectDetails.Id
-          });
-          $project.append('<h1><a href="' + projectDetails.Url + '">' + projectDetails.Name + '</a></h1>');
+</script>
 
-          //project
-          for (idx in projectDetails.BuildConfigs) {
-            if (!projectDetails.BuildConfigs[idx].CurrentBuildIsSuccesfull) {
-              $project.addClass("failing");
-              var failingBuildConfig = projectDetails.BuildConfigs[idx];
+<div class=title>
+  <h1>Q42 Continous Integration</h1>
+</div>
 
-              //append failing build details
-              $failingBuildEl = $("<div>", { 'class': "failing-build", 'id': failingBuildConfig.Id });
-              $failingBuildEl.append('<h2><a href="' + failingBuildConfig.Url + '">' + failingBuildConfig.Name + '</a></h2>');
+<div class=grid>
+  <div class=group-container>
+    <div class=group id=failing>
+      <h2>Failing</h2>
+      <div class=column-container></div>
+    </div>
+    <div class=group id=successful>
+      <h2>Successful</h2>
+      <div class=column-container></div>
+    </div>
+  </div>
+</div>
 
-              var $breakersEl = $("<div>", { 'class': "build-breakers" });
-              for (idx in failingBuildConfig.PossibleBuildBreakerEmailAddresses) {
-                var email = failingBuildConfig.PossibleBuildBreakerEmailAddresses[idx];
-                var emailHash = $().crypt({
-                  method: 'md5',
-                  source: email
-                });
-                $breakersEl.append('<figure class="build-breaker"><img src="http://www.gravatar.com/avatar/' + emailHash + '" alt="' + email + '" title="' + email + '"/><figcaption>Build Breaker?</figcaption></figure>');
-              }
-              $failingBuildEl.append($breakersEl);
+<script>
+window.grid = new MetroGrid();
+grid.init($('.grid'));
 
-              //now add failing build to project div
-              $project.append($failingBuildEl);
-            }
-          }
+loadData(function ()
+  {
+    grid.layout();
+    grid.animate();
+  });
+</script>
 
-          $containerEl.append($project);
-        });
-
-        //now masonry the whole lot
-        $containerEl.masonry('reload');
-      });
-      
-      //window.setTimeout(loadData, 30 * 1000);//reload ourselves in 30 seconds
-    };
-    
-    //hit it 
-    loadData();
-  </script>
-  <style type="text/css">
-    body {
-      background-color: #000;
-      font-family: Tahoma;
-      color: #FFF;
-    }
-
-    a {
-      text-decoration: none;
-      color: #FFF;
-    }
-    
-    figure
-    {
-      margin: 0;
-    }
-        
-    .project {
-      -moz-border-radius: 20px;
-      -webkit-border-radius: 20px;
-      -khtml-border-radius: 20px;
-      border-radius: 20px;
-      border: 4px solid #1c4c16;
-      padding: 8px;
-      margin: 10px;
-      float: left;
-      width: 270px;
-      background: #407A39; /*default = green*/
-    }
-
-    .project > h1 {
-      text-shadow: 1px 1px 2px #000;
-      font-weight: bold;
-      font-size: 1.1em;
-      text-transform: uppercase;
-    }
-    .project .failing-build
-    {
-      clear: both;
-      display: block;
-      margin-bottom: 1em;
-    }
-    .project .failing-build h2 a:before
-    {
-      content: "Broken: ";
-    }    
-    .project .failing-build h2 {
-      font-weight: normal;
-      font-size: 0.7em;
-    }
-    .project .failing-build h2 a{
-      color: #bbb;
-    }
-   
-    .project.failing{
-      background: #AF0E01;
-      border-color: #650801;
-    }
-       
-    .build-breakers
-    {
-      clear: both;
-    }
-       
-    .build-breaker
-    {
-      float: left;
-      width: 80px;
-      overflow: hidden;
-      margin-right: 0.5em;
-    }
-
-    .build-breaker img
-    {
-      width: 80px;
-      height: 80px;
-    }
-   
-    .build-breaker figcaption
-    {
-      font-size: 0.75em;
-    }    
-
-    .wrapper{
-      width: 90%;
-      margin: auto;
-    }
-  </style>
-</head>
-<body>
-  <div class="wrapper" data-id="container" />
-</body>
-</html>

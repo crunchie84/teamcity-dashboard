@@ -81,10 +81,16 @@
     <Compile Include="Services\WebCacheService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="css\styles.css" />
     <Content Include="Global.asax" />
     <Compile Include="Models\Project.cs" />
+    <Content Include="images\grid-unit.png" />
+    <Content Include="images\q42.png" />
+    <Content Include="images\transparent.gif" />
     <Content Include="Scripts\jquery.crypt.js" />
     <Content Include="Scripts\jquery.masonry.min.js" />
+    <Content Include="Scripts\jquery.min.js" />
+    <Content Include="Scripts\metro-grid.js" />
     <Content Include="Views\Dashboard\Index.aspx" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -99,6 +105,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\Segoe UI Bold.ttf" />
+    <Content Include="fonts\Segoe UI.ttf" />
+    <Content Include="fonts\segoeui.ttf" />
+    <Content Include="fonts\segoeuil.ttf" />
+    <Content Include="fonts\SegoeWP-Black.ttf" />
+    <Content Include="fonts\SegoeWP-Light.ttf" />
+    <Content Include="fonts\SegoeWP-Semibold.ttf" />
+    <Content Include="fonts\SegoeWP.ttf" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
