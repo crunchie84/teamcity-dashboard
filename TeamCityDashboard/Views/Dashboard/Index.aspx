@@ -1,15 +1,15 @@
 ﻿<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
 <!doctype html>
-<title>Q42 Continouos Integration</title>
+<title>Q42 Continuous Integration</title>
 
-<meta name=apple-touch-fullscreen content=yes>
-<meta name=apple-mobile-web-app-capable content=yes>
-<meta name=viewport content="user-scalable=no,initial-scale=1.0">
+<meta name="apple-touch-fullscreen" content=yes">
+<meta name="apple-mobile-web-app-capable" content=yes">
+<meta name="viewport" content="user-scalable=no,initial-scale=1.0">
 
-<link rel=apple-touch-icon href=images/q42.png>
-<link rel=apple-touch-startup-image href=images/black.png>
+<link rel="apple-touch-icon" href="images/q42.png">
+<link rel="apple-touch-startup-image" href="images/black.png">
 
-<link rel=stylesheet href=css/styles.css>
+<link rel="stylesheet" href="css/styles.css">
 
 <script src="scripts/jquery.min.js"></script>
 <script src="scripts/jquery.crypt.js"></script>
@@ -127,7 +127,7 @@ function loadData(layout)
 </script>
 
 <div class=title>
-  <h1>Q42 Continous Integration</h1>
+  <h1>Q42 Continuous Integration</h1>
 </div>
 
 <div class=grid>
