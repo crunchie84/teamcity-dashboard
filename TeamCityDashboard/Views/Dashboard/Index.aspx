@@ -65,7 +65,7 @@
         $containerEl.masonry('reload');
       });
       
-      window.setTimeout(loadData, 30 * 1000);//reload ourselves in 30 seconds
+      //window.setTimeout(loadData, 30 * 1000);//reload ourselves in 30 seconds
     };
     
     //hit it 
@@ -107,6 +107,12 @@
       font-size: 1.1em;
       text-transform: uppercase;
     }
+    .project .failing-build
+    {
+      clear: both;
+      display: block;
+      margin-bottom: 1em;
+    }
     .project .failing-build h2 a:before
     {
       content: "Broken: ";
@@ -123,7 +129,6 @@
       background: #AF0E01;
       border-color: #650801;
     }
-
        
     .build-breakers
     {
