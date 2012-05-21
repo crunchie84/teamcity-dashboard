@@ -84,7 +84,7 @@ function loadData(layout)
 
             $breakers
               .append('<img src=' + url + ' class='
-                     + (breakers.length > 1 ? 'half-size' : 'full-size')
+                     + (failingSteps.length > 1 || breakers.length > 1 ? 'half-size' : 'full-size')
                      + ' alt="'+email+'" title="'+email+'">');
           })
           if (breakers.length % 2 == 1 && breakers.length > 1)
