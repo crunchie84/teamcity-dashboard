@@ -136,11 +136,7 @@ namespace TeamCityDashboard.Services
       if (!currentBuildSuccesfull)
       {
         XmlNode lastSuccessfullBuild = buildResultsDoc.DocumentElement.SelectSingleNode("build[@status='SUCCESS']");
-        if (lastSuccessfullBuild == null)
-        {
-          buildBreakerEmailaddress.Add("unknown-too-long-ago");
-        }
-        else
+        if (lastSuccessfullBuild != null)
         {
           XmlElement breakingBuild = lastSuccessfullBuild.PreviousSibling as XmlElement;
           if (breakingBuild == null)
@@ -151,6 +147,9 @@ namespace TeamCityDashboard.Services
                 () => ParseBuildBreakerDetails(breakingBuild.GetAttribute("id")),
                 CACHE_DURATION
               ).Distinct().ToList();
+        }
+        else { 
+          //TODO we could iterate older builds to find the breaker
         }
       }
 
