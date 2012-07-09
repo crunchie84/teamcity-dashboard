@@ -149,7 +149,8 @@ namespace TeamCityDashboard.Services
               ).Distinct().ToList();
         }
         else { 
-          //TODO we could iterate older builds to find the breaker
+          //IF NO previous pages with older builds available then we can assume this is the first build and it broke. show image of that one.
+          //TODO we could iterate older builds to find the breaker via above logic
         }
       }
 
@@ -191,7 +192,11 @@ namespace TeamCityDashboard.Services
 
         //retrieve userid who changed something//details
         XmlDocument changeDetailsDoc = GetPageContents(string.Format(URL_CHANGE_DETAILS, changeId));
-        string userId = (changeDetailsDoc.SelectSingleNode("change/user") as XmlElement).GetAttribute("id");
+        XmlElement userDetails = (changeDetailsDoc.SelectSingleNode("change/user") as XmlElement);
+        if(userDetails == null)
+          continue;//sometimes a change is not linked to a user who commited it.. ?
+
+        string userId = userDetails.GetAttribute("id");
         if (userId == null)
           throw new ArgumentNullException(string.Format("No userId given in changeId {0}", changeId));
 
