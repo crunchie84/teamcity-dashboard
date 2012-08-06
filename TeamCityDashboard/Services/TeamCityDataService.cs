@@ -122,10 +122,18 @@ namespace TeamCityDashboard.Services
       };
     }
 
+    /// <summary>
+    /// Retrieve the build configdetails with the given ID. return NULL if the given config is not visible in the widget interface
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
     private IBuildConfig ParseBuildConfigDetails(string id, string name)
     {
       //do we need to show this buildCOnfig?
       bool isVisibleExternally = CacheService.Get<ProjectVisible>("build-visible-widgetinterface-" + id, () => IsBuildVisibleOnExternalWidgetInterface(id), CACHE_DURATION).Visible;
+      if (!isVisibleExternally)
+        return null;
 
       ///retrieve details of last 100 builds and find out if the last (=first row) was succesfull or iterate untill we found the first breaker?
       XmlDocument buildResultsDoc = GetPageContents(string.Format(URL_BUILDS_LIST, id));
