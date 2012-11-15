@@ -47,10 +47,6 @@ function loadData(layout)
     {
       var name = project.Name;
 
-      // Top secret!!1!
-      // if (name.indexOf("hilips") >= 0)
-      //   name = "Jeweetwel";
-
       var $a = $('<a href="' + project.Url + '" id=' + project.Id + ' class="item">');
       var $text = $('<div class="item-text">');
       var $extraText = $('<div class=extra-text>');
@@ -120,10 +116,27 @@ function loadData(layout)
 
     layout();
   });
-  
   window.setTimeout(loadData.bind(this, layout), 5 * 1000);
 };
 
+    //copy from http://www.sitepoint.com/html5-full-screen-api/
+    var pfx = ["webkit", "moz", "ms", "o", ""];
+    function RunPrefixMethod(obj, method) {
+        var p = 0, m, t;
+        while (p < pfx.length && !obj[m]) {
+            m = method;
+            if (pfx[p] == "") {
+                m = m.substr(0, 1).toLowerCase() + m.substr(1);
+            }
+            m = pfx[p] + m;
+            t = typeof obj[m];
+            if (t != "undefined") {
+                pfx = [pfx[p]];
+                return (t == "function" ? obj[m]() : obj[m]);
+            }
+            p++;
+        }
+    }
 </script>
 
 <div class=title>
@@ -153,4 +166,3 @@ loadData(function ()
     grid.animate();
   });
 </script>
-
