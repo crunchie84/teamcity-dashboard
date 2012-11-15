@@ -11,5 +11,3 @@ packages/*
 web.config
 *.Publish.xml
 *.ncrunchsolution
-
-*.ttf

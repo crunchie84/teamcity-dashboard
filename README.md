@@ -10,6 +10,6 @@ USAGE
  
 The site will try to find all non-archived projects and their (widget visible) build configs. It will determine which are failing and tries to retrieve the email addresses of the possible build breakers.
  
-NOTES
- * In the site we reference the Segoe UI fonts. Due to copyright issues these are not supplied in
- this Git repository. Fallback is Serif.
+About the font: Segoe UI
+==================
+The font is copyright by Microsoft. Please visit this link http://www.microsoft.com/typography/fonts/family.aspx?FID=331 to determine how you can get a licensed version. Fallback is Serif.
