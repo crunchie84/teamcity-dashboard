@@ -10,6 +10,7 @@ namespace TeamCityDashboard.Interfaces
     string Id { get; }
     string Name { get; }
     string Url { get; }
+    string SonarProjectKey { get; }
     IEnumerable<IBuildConfig> BuildConfigs { get; }
   }
 }

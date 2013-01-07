@@ -39,10 +39,16 @@ namespace TeamCityDashboard.Services
     /// url to retrieve list of projects in TeamCity
     /// </summary>
     private const string URL_PROJECTS_LIST = @"/httpAuth/app/rest/projects";
+    
     /// <summary>
     /// url to retrieve details of given {0} project (buildtypes etc)
     /// </summary>
     private const string URL_PROJECT_DETAILS = @"/httpAuth/app/rest/projects/id:{0}";
+
+    /// <summary>
+    /// URL to retrieve the project property 'sonar.project.key'. returns 404 not found if nothing there
+    /// </summary>
+    private const string URL_PROJECT_SONAR_KEY = @"/httpAuth/app/rest/projects/id:{0}/parameters/sonar.project.key";
 
     /// <summary>
     /// retrieve the first 100 builds of the given buildconfig and retrieve the status of it
@@ -122,11 +128,23 @@ namespace TeamCityDashboard.Services
       if (buildConfigs.Count == 0)
         return null;//do not report 'empty' projects'
 
+      //finally, try if we can find the teamcity property 'sonar.project.key' which is our link to Sonar
+      string sonarKey = string.Empty;
+      try
+      {
+        sonarKey = GetContents(string.Format(URL_PROJECT_SONAR_KEY, projectId));
+      }
+      catch (HttpException)
+      {
+        //404 means no property found thus no sonar key
+      }
+
       return new Project
       {
         Id = projectId,
         Name = projectName,
         Url = projectDetails.DocumentElement.GetAttribute("webUrl"),
+        SonarProjectKey = sonarKey,
         BuildConfigs = buildConfigs
       };
     }
@@ -250,7 +268,7 @@ namespace TeamCityDashboard.Services
     }
 
     /// <summary>
-    /// 
+    /// retrieve the content of given url and parse it to xmldocument. throws httpexception if raised
     /// </summary>
     /// <param name="relativeUrl"></param>
     /// <returns></returns>
@@ -262,6 +280,11 @@ namespace TeamCityDashboard.Services
       return result;
     }
 
+    /// <summary>
+    /// retrieve the content of given url. throws httpexception if raised
+    /// </summary>
+    /// <param name="relativeUrl"></param>
+    /// <returns></returns>
     private string GetContents(string relativeUrl)
     {
       try
