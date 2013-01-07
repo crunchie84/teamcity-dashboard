@@ -23,6 +23,10 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>4.0</OldToolsVersion>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -83,6 +87,8 @@
     <Compile Include="Models\BuildConfig.cs" />
     <Compile Include="Models\ProjectVisible.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AbstractHttpDataService.cs" />
+    <Compile Include="Services\SonarDataService.cs" />
     <Compile Include="Services\TeamCityDataService.cs" />
     <Compile Include="Services\WebCacheService.cs" />
   </ItemGroup>
