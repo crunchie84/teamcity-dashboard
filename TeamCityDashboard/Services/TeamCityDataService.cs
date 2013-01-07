@@ -9,6 +9,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using TeamCityDashboard.Models;
+using System.Globalization;
 
 namespace TeamCityDashboard.Services
 {
@@ -69,7 +70,8 @@ namespace TeamCityDashboard.Services
     private const string URL_USER_EMAILADDRESS = @"/httpAuth/app/rest/users/id:{0}/email";
 
     /// <summary>
-    /// retrieve the list of active projects which have at least one visible buildconfig
+    /// retrieve the list of active projects which have at least one visible 
+    /// buildconfig AND have active builds in the last week
     /// </summary>
     /// <returns></returns>
     public IEnumerable<IProject> GetActiveProjects()
@@ -81,8 +83,15 @@ namespace TeamCityDashboard.Services
       foreach (XmlElement el in projectsPageContent.SelectNodes("//project"))
       {
         var project = ParseProjectDetails(el.GetAttribute("id"), el.GetAttribute("name"));
-        if (project != null)
+        if (project == null)
+          continue;
+
+        //only display this project if there are builds in the last 7 days OR something is broken
+        if (project.BuildConfigs.Any(c => !c.CurrentBuildIsSuccesfull) ||
+          project.BuildConfigs.Any(c => c.CurrentBuildDate != null && c.CurrentBuildDate.Value.AddDays(7) > DateTime.Now))
+        {
           yield return project;
+        }
       }
     }
 
@@ -138,27 +147,46 @@ namespace TeamCityDashboard.Services
       ///retrieve details of last 100 builds and find out if the last (=first row) was succesfull or iterate untill we found the first breaker?
       XmlDocument buildResultsDoc = GetPageContents(string.Format(URL_BUILDS_LIST, id));
       XmlElement lastBuild = buildResultsDoc.DocumentElement.FirstChild as XmlElement;
-      bool currentBuildSuccesfull = lastBuild != null ? lastBuild.GetAttribute("status") == "SUCCESS" : true;//default to true
+      
 
+      DateTime? currentBuildDate = null;
+      bool currentBuildSuccesfull = true;
       List<string> buildBreakerEmailaddress = new List<string>();
-      if (!currentBuildSuccesfull)
-      {
-        XmlNode lastSuccessfullBuild = buildResultsDoc.DocumentElement.SelectSingleNode("build[@status='SUCCESS']");
-        if (lastSuccessfullBuild != null)
+
+      if(lastBuild != null){
+        currentBuildSuccesfull = lastBuild.GetAttribute("status") == "SUCCESS";//we default to true
+        
+        //try to parse last date
+        string buildDate = lastBuild.GetAttribute("startDate");
+        DateTime theDate;
+        
+        //TeamCity date format => 20121101T134409+0100
+        if (DateTime.TryParseExact(buildDate, @"yyyyMMdd\THHmmsszz\0\0", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out theDate))
         {
-          XmlElement breakingBuild = lastSuccessfullBuild.PreviousSibling as XmlElement;
-          if (breakingBuild == null)
-            buildBreakerEmailaddress.Add("no-breaking-build-after-succes-should-not-happen");
-          else
-            buildBreakerEmailaddress = CacheService.Get<IEnumerable<string>>(
-                "buildbreakers-build-" + breakingBuild.GetAttribute("id"),
-                () => ParseBuildBreakerDetails(breakingBuild.GetAttribute("id")),
-                CACHE_DURATION
-              ).Distinct().ToList();
+          currentBuildDate = theDate;
         }
-        else { 
-          //IF NO previous pages with older builds available then we can assume this is the first build and it broke. show image of that one.
-          //TODO we could iterate older builds to find the breaker via above logic
+
+        //if the last build was not successfull iterate back untill we found one which was successfull so we know who might have broke it.
+        if (!currentBuildSuccesfull)
+        {
+          XmlNode lastSuccessfullBuild = buildResultsDoc.DocumentElement.SelectSingleNode("build[@status='SUCCESS']");
+          if (lastSuccessfullBuild != null)
+          {
+            XmlElement breakingBuild = lastSuccessfullBuild.PreviousSibling as XmlElement;
+            if (breakingBuild == null)
+              buildBreakerEmailaddress.Add("no-breaking-build-after-succes-should-not-happen");
+            else
+              buildBreakerEmailaddress = CacheService.Get<IEnumerable<string>>(
+                  "buildbreakers-build-" + breakingBuild.GetAttribute("id"),
+                  () => ParseBuildBreakerDetails(breakingBuild.GetAttribute("id")),
+                  CACHE_DURATION
+                ).Distinct().ToList();
+          }
+          else
+          {
+            //IF NO previous pages with older builds available then we can assume this is the first build and it broke. show image of that one.
+            //TODO we could iterate older builds to find the breaker via above logic
+          }
         }
       }
 
@@ -168,6 +196,7 @@ namespace TeamCityDashboard.Services
         Name = name,
         Url = new Uri(string.Format("{0}/viewType.html?buildTypeId={1}&tab=buildTypeStatusDiv", BaseUrl, id)).ToString(),
         CurrentBuildIsSuccesfull = currentBuildSuccesfull,
+        CurrentBuildDate = currentBuildDate,
         PossibleBuildBreakerEmailAddresses = buildBreakerEmailaddress
       };
     }

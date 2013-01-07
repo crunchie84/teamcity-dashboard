@@ -10,6 +10,7 @@ namespace TeamCityDashboard.Interfaces
     string Id { get; }
     string Name { get; }
     string Url { get; }
+    DateTime? CurrentBuildDate { get; }
     bool CurrentBuildIsSuccesfull { get; }
     IEnumerable<string> PossibleBuildBreakerEmailAddresses { get; }
   }

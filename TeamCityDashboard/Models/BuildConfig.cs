@@ -13,5 +13,6 @@ namespace TeamCityDashboard.Models
     public bool CurrentBuildIsSuccesfull { get; set; }
     public string Url { get; set; }
     public IEnumerable<string> PossibleBuildBreakerEmailAddresses { get; set; }
+    public DateTime? CurrentBuildDate { get; set; }
   }
 }
