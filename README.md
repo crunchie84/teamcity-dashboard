@@ -8,7 +8,7 @@ USAGE
  * Hook up the site in IIS (.Net 4.0)
  * Go to the url. 
  
-The site will try to find all non-archived projects and their (widget visible) build configs. It will determine which are failing and tries to retrieve the email addresses of the possible build breakers.
+The site only shows non-archived projects with at least one build config where ‘enable status widget’ is checked. When a build is broken it tries to determine the breakers email address and displays the Gravatar of this user.
  
 About the font: Segoe UI
 ==================
