@@ -12,5 +12,6 @@ namespace TeamCityDashboard.Interfaces
     string Url { get; }
     string SonarProjectKey { get; }
     IEnumerable<IBuildConfig> BuildConfigs { get; }
+    ICodeStatistics Statistics { get; }
   }
 }
