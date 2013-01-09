@@ -14,9 +14,14 @@ namespace TeamCityDashboard.Interfaces
     //int CodeCoveragePercentage { get; }
 
     /// <summary>
-    /// sonar key=complexity
+    /// sonar key=class_complexity
     /// </summary>
-    int CyclomaticComplexity { get; }
+    double CyclomaticComplexityClass { get; }
+
+    /// <summary>
+    /// sonar key=function_complexity
+    /// </summary>
+    double CyclomaticComplexityFunction { get; }
 
     /// <summary>
     /// sonar key=ncloc

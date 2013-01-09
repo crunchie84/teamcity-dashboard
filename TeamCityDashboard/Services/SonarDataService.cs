@@ -14,7 +14,7 @@ namespace TeamCityDashboard.Services
 
     //http://sonar.q42.net/api/resources?resource=NegenTwee:PartnerApi&metrics=ncloc,coverage&verbose=true&includetrends=true
     private const string PROJECT_TRENDS_URL = @"/api/resources?resource={0}&metrics={1}&verbose=true&includetrends=true&format=xml";
-    private const string PROJECT_METRICS_CSV = @"coverage,complexity,ncloc,comment_lines_density,comment_lines,tests";
+    private const string PROJECT_METRICS_CSV = @"coverage,class_complexity,function_complexity,ncloc,comment_lines_density,comment_lines,tests";
 
     public ICodeStatistics GetProjectStatistics(string projectKey)
     {
@@ -26,7 +26,8 @@ namespace TeamCityDashboard.Services
         NonCommentingLinesOfCode = (int)double.Parse(data.SelectSingleNode("resources/resource/msr[key='ncloc']/val").InnerText, CultureInfo.InvariantCulture),
         CommentLines = (int)double.Parse(data.SelectSingleNode("resources/resource/msr[key='comment_lines']/val").InnerText, CultureInfo.InvariantCulture),
         CommentLinesPercentage = double.Parse(data.SelectSingleNode("resources/resource/msr[key='comment_lines_density']/val").InnerText, CultureInfo.InvariantCulture),
-        CyclomaticComplexity = (int)double.Parse(data.SelectSingleNode("resources/resource/msr[key='complexity']/val").InnerText, CultureInfo.InvariantCulture),
+        CyclomaticComplexityClass = double.Parse(data.SelectSingleNode("resources/resource/msr[key='class_complexity']/val").InnerText, CultureInfo.InvariantCulture),
+        CyclomaticComplexityFunction = double.Parse(data.SelectSingleNode("resources/resource/msr[key='function_complexity']/val").InnerText, CultureInfo.InvariantCulture),
         CodeCoveragePercentage = double.Parse(data.SelectSingleNode("resources/resource/msr[key='coverage']/val").InnerText, CultureInfo.InvariantCulture)
       };
     }

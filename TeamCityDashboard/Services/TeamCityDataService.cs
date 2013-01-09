@@ -70,6 +70,10 @@ namespace TeamCityDashboard.Services
 
       foreach (XmlElement el in projectsPageContent.SelectNodes("//project"))
       {
+        //temp to make it faster
+        if (!new string[] { "project39", "project52" }.Contains(el.GetAttribute("id")))
+          continue;
+
         var project = ParseProjectDetails(el.GetAttribute("id"), el.GetAttribute("name"));
         if (project == null)
           continue;
