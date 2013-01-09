@@ -62,9 +62,6 @@
 
                         var $breakers = $('<div class=item-images>');
                         var breakers = step.PossibleBuildBreakerEmailAddresses;
-                        breakers.push('jeroen@q42.nl');
-                        breakers.push('bob@q42.nl');
-
                         $.each(breakers, function (_, email) {
                             var emailHash = $().crypt({ method: 'md5', source: email });
                             var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=500';

@@ -100,6 +100,12 @@ MetroGrid.prototype = {
         //now animate the extra-text portion to top 
         if (step == 3)
         {
+          if (!$item.find('.extra-text').length) {
+            //we dont animate up or down, ready with animation, ready for next cycle
+            $item.data('step', 1);
+            dfd.resolve();
+          }
+
           //TODO fix failing 125 due to new height
           $item.children()
             .animate({ top: -(($item.hasClass('failing') && $item.find('.item-images img').length) ? 130 : 120) }, 'slow', function ()
@@ -120,6 +126,7 @@ MetroGrid.prototype = {
             {
               setTimeout(function ()
               {
+                //ready for next animation cycle
                 $item.data('step', 1);
                 dfd.resolve();
               }.bind(this), 1000);
