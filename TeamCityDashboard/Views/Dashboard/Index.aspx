@@ -101,7 +101,7 @@
                     }
                     else {
                         //append buildstep information to animation + summary
-                        $text.append('<p class=small>' + project.BuildConfigs.length + ' build ' + (project.BuildConfigs.length > 1 ? 'steps' : 'step') + '</p>');
+                        $text.append('<p class="small build-steps-count">' + project.BuildConfigs.length + ' build ' + (project.BuildConfigs.length > 1 ? 'steps' : 'step') + '</p>');
 
                         $.each(project.BuildConfigs, function (_, step) {
                             $extraText.append('<p id=' + step.Id + ' class=small>'

@@ -176,8 +176,10 @@ MetroGrid.prototype = {
           $item.width(120);
           var overflows = $item.find('.item-text p')[0].scrollWidth > $item.find('.item-text p')[0].clientWidth;
 
-          var wontFit = overflows || $item.find('.item-text').outerHeight() > height || $item.find('.item-text .statistics-container').length;
-
+          var wontFit = overflows ||
+            $item.find('.item-text').outerHeight() > height ||
+            $item.find('.item-text .statistics-container').length ||
+            ($item.find('.item-text .build-steps-count').position().top > 50 && $item.find('.item-text .logo').length);
           if (wontFit || nrHalfs == 4)
           {
             $item.width(250);
