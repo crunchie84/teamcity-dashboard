@@ -45,10 +45,6 @@
 
                 var $a = $('<a href="' + project.Url + '" id=' + project.Id + ' class="item">');
 
-                //append project details
-                //var $projectSummary = $('<div class="project-summary">');
-                //$a.append($projectSummary);
-
                 var $text = $('<div class="item-text">');
                 var $extraText = $('<div class=extra-text>');
                 $a.append($text).append($extraText);
@@ -68,7 +64,7 @@
                         var breakers = step.PossibleBuildBreakerEmailAddresses;
                         $.each(breakers, function (_, email) {
                             var emailHash = $().crypt({ method: 'md5', source: email });
-                            var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=250';
+                            var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=500';
 
                             if (allBreakers.indexOf(email) >= 0) return;
                             allBreakers.push(email);
@@ -88,8 +84,6 @@
                 else {
                     $a.addClass('successful')
                     $text.append('<p class=large>' + name + '</p>');
-
-
 
                     if (project.Statistics != null) {
                         //add statistics to animation
@@ -114,7 +108,10 @@
                         });
                     }
 
-
+                    //last part - add icon if available
+                    if (project.IconUrl != null) {
+                        $text.append('<img src="' + project.IconUrl + '" class="logo" />');
+                    }
                 }
 
                 //now append the project to the correct column
