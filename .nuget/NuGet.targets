@@ -34,16 +34,21 @@
         <BuildCommand>$(NuGetCommand) pack "$(ProjectPath)" -p Configuration=$(Configuration) -o "$(PackageOutputDir)" -symbols</BuildCommand>
 
         <!-- Make the build depend on restore packages -->
-        <BuildDependsOn Condition="$(RestorePackages) == 'true'">
+		<!-- bugfix from this bugreporT: http://nuget.codeplex.com/workitem/2214 -->
+		<PrepareForBuildDependsOn Condition="$(RestorePackages) == 'true'">
+			$(PrepareForBuildDependsOn);
+			RestorePackages;			
+		</PrepareForBuildDependsOn>		
+        <!--<BuildDependsOn Condition="$(RestorePackages) == 'true'">
             RestorePackages;
             $(BuildDependsOn);
-        </BuildDependsOn>
+        </BuildDependsOn>-->
 
         <!-- Make the build depend on restore packages -->
-        <BuildDependsOn Condition="$(BuildPackage) == 'true'">
-            $(BuildDependsOn);
+        <PrepareForBuildDependsOn Condition="$(BuildPackage) == 'true'">
+            $(PrepareForBuildDependsOn);
             BuildPackage;
-        </BuildDependsOn>
+        </PrepareForBuildDependsOn>
     </PropertyGroup>
 
     <Target Name="CheckPrerequisites">
