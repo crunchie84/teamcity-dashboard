@@ -20,7 +20,7 @@ body
   x-background-image: url(../images/grid-unit.png);
   background-color: #000;
   color: #fff;
-  font-family: Segoe UI, Serif;
+  font-family: Segoe UI, Sans-Serif;
   -webkit-overflow-scrolling: auto;
 }
 
@@ -33,7 +33,7 @@ a
 h1,
 .xx-large
 {
-  font-family: Segoe UI Light, Serif;
+  font-family: Segoe UI Light, Sans-Serif;
   font-size: 42pt;
   margin: -15px 3px 16px -3px; /* Use margin to fix baseline */
   line-height: 48pt;
@@ -42,7 +42,7 @@ h1,
 h2,
 .x-large
 {
-  font-family: Segoe UI Light, Serif;
+  font-family: Segoe UI Light, Sans-Serif;
   font-size: 20pt;
   margin: -7px 2px 7px -2px; /* Use margin to fix baseline */
   line-height: 24pt;
@@ -51,7 +51,7 @@ h2,
 h3,
 .large
 {
-  font-family: Segoe UI Semibold, Serif;
+  font-family: Segoe UI, Sans-Serif;
   font-size: 11pt;
   margin: 4px 0 -4px 0; /* Use margin-top to fix baseline */
   line-height: 15pt;
@@ -60,7 +60,7 @@ h3,
 p,
 .medium
 {
-  font-family: Segoe UI, Serif;
+  font-family: Segoe UI, Sans-Serif;
   font-size: 11pt;
   margin: 4px 2px -4px -2px; /* Use margin to fix baseline */
   line-height: 15pt;
@@ -69,7 +69,7 @@ p,
 h4,
 .small
 {
-  font-family: Segoe UI, Serif;
+  font-family: Segoe UI, Sans-Serif;
   font-size: 9pt;
   font-weight: normal;
   margin: 5px 2px -5px -2px; /* Use margin to fix baseline */
@@ -120,25 +120,49 @@ h4,
   float: left;
   margin: 0 10px 10px 0;
   width: 250px;
-  min-height: 90px;
+  min-height: 120px;
   overflow: hidden;
 }
 
-.item-images
+.item .item-images
 {
   position: relative;
 }
 
-.item-text
+.item .item-text
 {
   position: relative;
   clear: left;
   display: block;
   padding: 7px 20px 10px 20px;
   box-sizing: border-box;
+  height: 120px;
 }
 
-.extra-text
+
+.item .item-text .logo
+{
+  max-width: 30px;
+  max-height: 30px;
+  position: absolute;
+  bottom: 10px;
+  left:   20px;
+}
+.item .item-text .statistics-container
+{
+  xfloat: right;
+}
+
+.statistic .value
+{
+  font-size: 11pt;
+  float: right;
+}
+
+
+
+
+.item .extra-text
 {
   position: relative;
   display: none;
@@ -170,4 +194,3 @@ h4,
 {
   background: #822;
 }
-

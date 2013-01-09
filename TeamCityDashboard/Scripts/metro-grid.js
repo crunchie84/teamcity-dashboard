@@ -101,8 +101,9 @@ MetroGrid.prototype = {
 
         if (step == 3)
         {
+          //TODO fix failing 125 due to new height
           $item.children()
-            .animate({ top: -($item.hasClass('failing') ? 125 : 90) }, 'slow', function ()
+            .animate({ top: -($item.hasClass('failing') ? 125 : 120) }, 'slow', function ()
             {
               setTimeout(function ()
               {
@@ -166,7 +167,7 @@ MetroGrid.prototype = {
       $.each($items, function (_, item)
       {
         var $item = $(item);
-        var height = Math.ceil($item.height() / 100) * 100 - 10;
+        var height = Math.ceil($item.height() / 130) * 130 - 10;
         $item.height(height)
 
         // Try to make half width only if successful
@@ -175,7 +176,7 @@ MetroGrid.prototype = {
           $item.width(120);
           var overflows = $item.find('.item-text p')[0].scrollWidth > $item.find('.item-text p')[0].clientWidth;
 
-          var wontFit = overflows || $item.find('.item-text').outerHeight() > height;
+          var wontFit = overflows || $item.find('.item-text').outerHeight() > height || $item.find('.item-text .statistics-container').length;
 
           if (wontFit || nrHalfs == 4)
           {

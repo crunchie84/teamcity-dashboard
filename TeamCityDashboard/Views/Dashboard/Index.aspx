@@ -87,11 +87,12 @@
 
                     if (project.Statistics != null) {
                         //add statistics to animation
-                        $text.append('<p class="small">' +
-                            '<span class="statistic LinesOfCode"><span class="value">' + project.Statistics.NonCommentingLinesOfCode + '</span> lines of code</span>' +
-                            ' | ' +
-                            '<span class="statistic CodeCoveragePercentage"><span class="value">' + project.Statistics.CodeCoveragePercentage + '</span> % test coverage</span>' +
-                            '</p>');
+                        $text.append(
+                            '<div class="statistics-container">'+
+                            '<p class="small"><span class="statistic LinesOfCode">Lines of code <span class="value">' + project.Statistics.NonCommentingLinesOfCode + '</span></span></p>' +
+                            '<p class="small"><span class="statistic CodeCoveragePercentage">Test coverage <span class="value">' + project.Statistics.CodeCoveragePercentage + '%</span></span></p>' +
+                            '</div>'
+                            );
 
                         $extraText.append('<div class="statistic PercentageComments">Comments <span class="value">' + project.Statistics.CommentLinesPercentage + '%</span></div>');
                         $extraText.append('<div class="statistic AmountOfUnitTests">Amount of unit Tests <span class="value">' + project.Statistics.AmountOfUnitTests + '</span></div>');
