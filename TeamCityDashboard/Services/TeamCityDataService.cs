@@ -131,7 +131,7 @@ namespace TeamCityDashboard.Services
     /// <param name="id"></param>
     /// <param name="name"></param>
     /// <returns></returns>
-    private IBuildConfig ParseBuildConfigDetails(string id, string name)
+    private IBuildConfig Pars eBuildConfigDetails(string id, string name)
     {
       //do we need to show this buildCOnfig?
       bool isVisibleExternally = CacheService.Get<ProjectVisible>("build-visible-widgetinterface-" + id, () => IsBuildVisibleOnExternalWidgetInterface(id), CACHE_DURATION).Visible;
