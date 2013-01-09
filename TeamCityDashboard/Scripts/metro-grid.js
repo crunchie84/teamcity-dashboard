@@ -39,14 +39,14 @@ MetroGrid.prototype = {
   {
     return $.Deferred(function (dfd)
       {
-        var step = $item.data('step') || 0;
+        var step = $item.data('step') || 'uninitialized';
 
         //if somehow we are triggert twice at the same time we bail out the second time
-        if (step < 0) return;
-        $item.data('step', -1);
+        if (step == 'animating') return;
+        $item.data('step', 'animating');
 
 
-        if (step == 0)
+        if (step == 'uninitialized')
         {
           //hard position the extra text outside of the box and make it visible
           $itemText = $item.find('.item-text');
@@ -57,15 +57,15 @@ MetroGrid.prototype = {
             .css({ marginTop: mtop })
             .show();
 
-          step = 1;
+          step = 'start';
         }
 
-        if (step == 1)
+        if (step == 'start')
         {
           //if we have multiple images they will round-robin fade in fade out and change position
           var $images = $item.find('.item-images img');
           if (!$item.hasClass('failing') || $images.length < 2) {
-            step = 3;
+            step = 'up';
           }
           else {
             var fst = Math.floor(Math.random() * $images.length);
@@ -81,7 +81,7 @@ MetroGrid.prototype = {
                 $snd.animate({ opacity: 1, }, 'slow', function () {
                   $fst.animate({ opacity: 1, }, 'slow', function () {
                     setTimeout(function () {
-                      $item.data('step', 3);
+                      $item.data('step', 'up');
                       dfd.resolve();
                     }, 1000);
                   });
@@ -91,35 +91,36 @@ MetroGrid.prototype = {
           }
         }
 
-        if (step == 2)
+        if (step == '?')
         {
           if (!$item.hasClass('failing'))
-            step = 3;
+            step = 'up';
         }
 
         //now animate the extra-text portion to top 
-        if (step == 3)
+        if (step == 'up')
         {
           if (!$item.find('.extra-text').length) {
             //we dont animate up or down, ready with animation, ready for next cycle
-            $item.data('step', 1);
+            $item.data('step', 'start');
             dfd.resolve();
+            return;
           }
 
-          //TODO fix failing 125 due to new height
+          //130 = images should not display margin
           $item.children()
             .animate({ top: -(($item.hasClass('failing') && $item.find('.item-images img').length) ? 130 : 120) }, 'slow', function ()
             {
               setTimeout(function ()
               {
-                $item.data('step', 4);
+                $item.data('step', 'down');
                 dfd.resolve(true);
               }.bind(this), 1000);
             }.bind(this));
         }
 
         //now animate back to the bottom part
-        if (step == 4)
+        if (step == 'down')
         {
           $item.children()
             .animate({ top: 0 }, 'slow', function ()
@@ -127,7 +128,7 @@ MetroGrid.prototype = {
               setTimeout(function ()
               {
                 //ready for next animation cycle
-                $item.data('step', 1);
+                $item.data('step', 'start');
                 dfd.resolve();
               }.bind(this), 1000);
             }.bind(this));
