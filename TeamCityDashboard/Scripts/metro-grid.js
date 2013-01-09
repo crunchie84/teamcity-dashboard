@@ -165,7 +165,7 @@ MetroGrid.prototype = {
         var height = Math.ceil($item.height() / 100) * 100 - 10;
         $item.height(height)
 
-        // Try to make half width
+        // Try to make half width only if successful
         if ($item.hasClass('successful'))
         {
           $item.width(120);
