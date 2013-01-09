@@ -17,6 +17,7 @@
 
 <script>
 var lastStr = '';
+
 function loadData(layout)
 {
   $.getJSON("data").done(function (data)
@@ -48,14 +49,16 @@ function loadData(layout)
       var name = project.Name;
 
       var $a = $('<a href="' + project.Url + '" id=' + project.Id + ' class="item">');
+
+        //append project details
+      //var $projectSummary = $('<div class="project-summary">');
+      //$a.append($projectSummary);
+
       var $text = $('<div class="item-text">');
       var $extraText = $('<div class=extra-text>');
-      $a
-        .append($text)
-        .append($extraText);
+      $a.append($text).append($extraText);
 
       var failingSteps = project.BuildConfigs.filter(function (s) { return !s.CurrentBuildIsSuccesfull });
-
       if (failingSteps.length)
       {
         $a.addClass('failing');
@@ -93,22 +96,36 @@ function loadData(layout)
       else
       {
         $a.addClass('successful')
-        $text
-          .append('<p class=large>' + name + '</p>')
-          .append('<p class=small>' + project.BuildConfigs.length + ' build '
-                  + (project.BuildConfigs.length > 1 ? 'steps' : 'step')
-                  + '</p>');
+        $text.append('<p class=large>' + name + '</p>');
 
-        $.each(project.BuildConfigs, function (_, step)
-        {
-          $extraText.append('<p id=' + step.Id + ' class=small>'
-                       + '<a href="' + step.Url + '">' + step.Name + '</a></p>');
-        });
+          if (project.Statistics != null) {
+            //add statistics to animation
+              $text.append('<p class="small">' +
+                  '<span class="statistic LinesOfCode"><span class="value">' + project.Statistics.NonCommentingLinesOfCode + '</span> lines of code</span>' +
+                  ' | ' +
+                  '<span class="statistic CodeCoveragePercentage"><span class="value">' + project.Statistics.CodeCoveragePercentage + '</span> % test coverage</span>' +
+                  '</p>');
+            
+            $extraText.append('<div class="statistic PercentageComments">Comments <span class="value">' + project.Statistics.CommentLinesPercentage + '%</span></div>');
+            $extraText.append('<div class="statistic AmountOfUnitTests">Amount of unit Tests <span class="value">' + project.Statistics.AmountOfUnitTests + '</span></div>');
+            $extraText.append('<div class="statistic CyclomaticComplexityClass">Average class complexity <span class="value">' + project.Statistics.CyclomaticComplexityClass + '</span></div>');
+            $extraText.append('<div class="statistic CyclomaticComplexityFunction">Average func complexity <span class="value">' + project.Statistics.CyclomaticComplexityFunction + '</span></div>');
+          }
+        else {
+              //append buildstep information to animation + summary
+              $text.append('<p class=small>' + project.BuildConfigs.length + ' build ' + (project.BuildConfigs.length > 1 ? 'steps' : 'step') + '</p>');
+
+            $.each(project.BuildConfigs, function (_, step) {
+                $extraText.append('<p id=' + step.Id + ' class=small>'
+                             + '<a href="' + step.Url + '">' + step.Name + '</a></p>');
+            });
+        }
+
+
       }
 
-
+      //now append the project to the correct column
       if (failingSteps.length)
-      //if (project.BuildConfigs.length > 1)
         $failing.find('.column-container').append($a);
       else
         $successful.find('.column-container').append($a);
