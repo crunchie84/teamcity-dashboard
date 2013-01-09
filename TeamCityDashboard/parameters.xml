@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<parameters>
+  <!-- 
+  This file is used by MsDeploy to parameterize settings for the deploy package. 
+  These parameters will be 'parameterized' on package before deploy. This creates a neath deployment package
+  -->
+  <parameter name="TeamCity server URL" defaultValue="http://your-teamcity-instance.com" description="Url to your TeamCity instance">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='teamcity.baseUrl']/@value" />
+  </parameter>
+  <parameter name="TeamCity Username" defaultValue="my-dashboard-user" description="Teamcity user account for polling project details">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='teamcity.username']/@value" />
+  </parameter>
+    <parameter name="TeamCity Password" defaultValue="" description="Password of the user account to use for TeamCity polling">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='teamcity.password']/@value" />
+  </parameter>
+
+  <parameter name="Sonar server URL" defaultValue="http://your-sonar-instance.com" description="Url to your Sonar instance">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='sonar.baseUrl']/@value" />
+  </parameter>
+  <parameter name="Sonar Username" defaultValue="my-dashboard-user" description="Sonar user account for polling project details">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='sonar.username']/@value" />
+  </parameter>
+    <parameter name="Sonar Password" defaultValue="" description="Password of the user account to use for Sonar polling">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='sonar.password']/@value" />
+  </parameter>  
+
+  <parameter name="Logging path with filename prefix" defaultValue="c:/Inetpub/teamcity-dashboard/logs/website-" description="Complete path + filename prefix for logfiles">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/log4net/appender[@name='file']/file/@value" />
+  </parameter>
+  <parameter name="Minimum loglevel" defaultValue="INFO" description="Minimal level of log messages to write to file">
+    <parameterValidation kind="Enumeration" validationString="DEBUG,INFO,WARN,ERROR,FATAL" />
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/log4net/root/level/@value" />
+  </parameter>
+</parameters>

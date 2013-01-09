@@ -4,6 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    
+	<!-- custom version string from teamcity or defaulting to 0.0.0.0 if not running from teamcity -->
+    <build_number Condition=" '$(build_number)' == ''">0.0.0.0</build_number>
+    <DesktopBuildPackageLocation>obj\$(Configuration)\Package\TeamCityDashboard-$(build_number).zip</DesktopBuildPackageLocation>
+    <GenerateSampleDeployScript>False</GenerateSampleDeployScript>
+	
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
