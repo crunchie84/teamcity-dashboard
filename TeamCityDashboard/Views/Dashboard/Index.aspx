@@ -47,7 +47,7 @@
 
                 var $text = $('<div class="item-text">');
                 var $extraText = $('<div class=extra-text>');
-                $a.append($text).append($extraText);
+                $a.append($text);
 
                 var failingSteps = project.BuildConfigs.filter(function (s) { return !s.CurrentBuildIsSuccesfull });
                 if (failingSteps.length) {
@@ -57,11 +57,14 @@
                     var allBreakers = [];
 
                     $.each(failingSteps, function (_, step) {
-                        $extraText.append('<p id=' + step.Id + ' class=small>'
+                        $text.append('<p id=' + step.Id + ' class=small>'
                                      + '<a href="' + step.Url + '">' + step.Name + '</a></p>');
 
                         var $breakers = $('<div class=item-images>');
                         var breakers = step.PossibleBuildBreakerEmailAddresses;
+                        breakers.push('jeroen@q42.nl');
+                        breakers.push('bob@q42.nl');
+
                         $.each(breakers, function (_, email) {
                             var emailHash = $().crypt({ method: 'md5', source: email });
                             var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=500';
@@ -82,6 +85,8 @@
                     });
                 }
                 else {
+                    $a.append($extraText);//we have extra info to animate
+
                     $a.addClass('successful')
                     $text.append('<p class=large>' + name + '</p>');
 
@@ -108,11 +113,11 @@
                                             + '<a href="' + step.Url + '">' + step.Name + '</a></p>');
                         });
                     }
+                }
 
-                    //last part - add icon if available
-                    if (project.IconUrl != null) {
-                        $text.append('<img src="' + project.IconUrl + '" class="logo" />');
-                    }
+                //last part - add icon if available
+                if (project.IconUrl != null) {
+                    $text.append('<img src="' + project.IconUrl + '" class="logo" />');
                 }
 
                 //now append the project to the correct column

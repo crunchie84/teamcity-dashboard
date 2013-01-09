@@ -41,11 +41,14 @@ MetroGrid.prototype = {
       {
         var step = $item.data('step') || 0;
 
+        //if somehow we are triggert twice at the same time we bail out the second time
         if (step < 0) return;
         $item.data('step', -1);
 
+
         if (step == 0)
         {
+          //hard position the extra text outside of the box and make it visible
           $itemText = $item.find('.item-text');
           var mtop = $itemText.position()
             ? $item.height() - $itemText.position().top - $itemText.height() - 10
@@ -59,37 +62,32 @@ MetroGrid.prototype = {
 
         if (step == 1)
         {
+          //if we have multiple images they will round-robin fade in fade out and change position
           var $images = $item.find('.item-images img');
-
-          if (!$item.hasClass('failing') || $images.length < 2)
+          if (!$item.hasClass('failing') || $images.length < 2) {
             step = 3;
-          else
-          {
+          }
+          else {
             var fst = Math.floor(Math.random() * $images.length);
             var snd = (fst + 1) % $images.length;
 
             var $fst = $($images[fst]);
             var $snd = $($images[snd]);
 
-            $fst.animate({ opacity: 0, }, 'slow', function ()
-              {
-                $snd.animate({ opacity: 0, }, 'slow', function ()
-                {
-                  $fst.swap($snd);
+            $fst.animate({ opacity: 0, }, 'slow', function () {
+              $snd.animate({ opacity: 0, }, 'slow', function () {
+                $fst.swap($snd);
 
-                  $snd.animate({ opacity: 1, }, 'slow', function ()
-                  {
-                    $fst.animate({ opacity: 1, }, 'slow', function ()
-                    {
-                      setTimeout(function ()
-                      {
-                        $item.data('step', 3);
-                        dfd.resolve();
-                      }, 1000);
-                    });
+                $snd.animate({ opacity: 1, }, 'slow', function () {
+                  $fst.animate({ opacity: 1, }, 'slow', function () {
+                    setTimeout(function () {
+                      $item.data('step', 3);
+                      dfd.resolve();
+                    }, 1000);
                   });
                 });
               });
+            });
           }
         }
 
@@ -99,11 +97,12 @@ MetroGrid.prototype = {
             step = 3;
         }
 
+        //now animate the extra-text portion to top 
         if (step == 3)
         {
           //TODO fix failing 125 due to new height
           $item.children()
-            .animate({ top: -($item.hasClass('failing') ? 125 : 120) }, 'slow', function ()
+            .animate({ top: -(($item.hasClass('failing') && $item.find('.item-images img').length) ? 130 : 120) }, 'slow', function ()
             {
               setTimeout(function ()
               {
@@ -113,6 +112,7 @@ MetroGrid.prototype = {
             }.bind(this));
         }
 
+        //now animate back to the bottom part
         if (step == 4)
         {
           $item.children()
