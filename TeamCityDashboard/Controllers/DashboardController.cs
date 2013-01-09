@@ -36,24 +36,23 @@ namespace TeamCityDashboard.Controllers
           ConfigurationManager.AppSettings["sonar.password"]
         );
       }
-
     }
 
     [UrlRoute(Name = "Data", Path = "data")]
     [HttpGet()]
     public ActionResult Data()
     {
-
-      var projectsWithSonarDataAdded = from proj in TeamCityDataService.GetActiveProjects() select new TeamCityDashboard.Models.Project{
-        Id = proj.Id,
-        Name = proj.Name,
-        BuildConfigs = proj.BuildConfigs,
-        SonarProjectKey = proj.SonarProjectKey,
-        Url = proj.Url,
-        IconUrl = proj.IconUrl,
-        Statistics = string.IsNullOrWhiteSpace(proj.SonarProjectKey) ? (ICodeStatistics)null : SonarDataService.GetProjectStatistics(proj.SonarProjectKey)
-      };
-
+      var projectsWithSonarDataAdded = from proj in TeamCityDataService.GetActiveProjects()
+                                       select new TeamCityDashboard.Models.Project
+                                       {
+                                         Id = proj.Id,
+                                         Name = proj.Name,
+                                         BuildConfigs = proj.BuildConfigs,
+                                         SonarProjectKey = proj.SonarProjectKey,
+                                         Url = proj.Url,
+                                         IconUrl = proj.IconUrl,
+                                         Statistics = string.IsNullOrWhiteSpace(proj.SonarProjectKey) ? (ICodeStatistics)null : SonarDataService.GetProjectStatistics(proj.SonarProjectKey)
+                                       };
 
       return new JsonResult()
       {
@@ -69,6 +68,5 @@ namespace TeamCityDashboard.Controllers
     {
       return View();
     }
-
   }
 }
