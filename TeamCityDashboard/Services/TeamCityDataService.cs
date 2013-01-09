@@ -28,11 +28,6 @@ namespace TeamCityDashboard.Services
     private const string URL_PROJECT_DETAILS = @"/httpAuth/app/rest/projects/id:{0}";
 
     /// <summary>
-    /// URL to retrieve the project property 'sonar.project.key'. returns 404 not found if nothing there
-    /// </summary>
-    private const string URL_PROJECT_SONAR_KEY = @"/httpAuth/app/rest/projects/id:{0}/parameters/sonar.project.key";
-
-    /// <summary>
     /// retrieve the first 100 builds of the given buildconfig and retrieve the status of it
     /// </summary>
     private const string URL_BUILDS_LIST = @"/httpAuth/app/rest/buildTypes/id:{0}/builds";
@@ -110,25 +105,24 @@ namespace TeamCityDashboard.Services
       if (buildConfigs.Count == 0)
         return null;//do not report 'empty' projects'
 
-      //finally, try if we can find the teamcity property 'sonar.project.key' which is our link to Sonar
-      string sonarKey = string.Empty;
-      try
-      {
-        sonarKey = GetContents(string.Format(URL_PROJECT_SONAR_KEY, projectId));
-      }
-      catch (HttpException)
-      {
-        //404 means no property found thus no sonar key
-      }
-
       return new Project
       {
         Id = projectId,
         Name = projectName,
         Url = projectDetails.DocumentElement.GetAttribute("webUrl"),
-        SonarProjectKey = sonarKey,
+        IconUrl = parseProjectProperty(projectDetails, "dashboard.project.logo.url"),
+        SonarProjectKey = parseProjectProperty(projectDetails, "sonar.project.key"),
         BuildConfigs = buildConfigs
       };
+    }
+
+    private static string parseProjectProperty(XmlDocument projectDetails, string propertyName)
+    {
+      var propertyElement = projectDetails.SelectSingleNode(string.Format("project/parameters/property[@name='{0}']/@value", propertyName));
+      if (propertyElement != null)
+        return propertyElement.Value;
+      
+      return null;
     }
 
     /// <summary>

@@ -49,6 +49,8 @@ namespace TeamCityDashboard.Controllers
         Name = proj.Name,
         BuildConfigs = proj.BuildConfigs,
         SonarProjectKey = proj.SonarProjectKey,
+        Url = proj.Url,
+        IconUrl = proj.IconUrl,
         Statistics = string.IsNullOrWhiteSpace(proj.SonarProjectKey) ? (ICodeStatistics)null : SonarDataService.GetProjectStatistics(proj.SonarProjectKey)
       };
 

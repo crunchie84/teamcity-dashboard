@@ -12,7 +12,9 @@ namespace TeamCityDashboard.Models
     public string Name { get; set; }
     public IEnumerable<IBuildConfig> BuildConfigs { get; set; }
     public string Url { get; set; }
-    
+
+    public string IconUrl { get; set; }
+
     // sonar specific part
 
     public string SonarProjectKey { get; set; }
