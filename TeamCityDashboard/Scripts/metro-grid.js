@@ -1,3 +1,7 @@
+/*!
+* Windows 8 Metro Grid implementation by Tom Lokhorst
+*
+*/
 function MetroGrid()
 {
 }

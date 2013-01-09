@@ -1,9 +1,10 @@
-/*
+/*!
  * jQuery Cryptography Plug-in
  * version: 1.0.0 (24 Sep 2008)
  * copyright 2008 Scott Thompson http://www.itsyndicate.ca - scott@itsyndicate.ca
  * http://www.opensource.org/licenses/mit-license.php
- *
+ */
+/*
  * A set of functions to do some basic cryptography encoding/decoding
  * I compiled from some javascripts I found into a jQuery plug-in.
  * Thanks go out to the original authors.

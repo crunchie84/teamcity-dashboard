@@ -8,8 +8,6 @@
 <meta name="viewport" content="user-scalable=no,initial-scale=1.0">
 
 <link rel="apple-touch-icon" href="images/q42.png">
-<link rel="apple-touch-startup-image" href="images/black.png">
-
 <link rel="stylesheet" href="css/styles.css">
 
 <script src="scripts/jquery.min.js"></script>
