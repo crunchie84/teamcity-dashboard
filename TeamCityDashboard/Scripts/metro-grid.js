@@ -23,17 +23,17 @@ MetroGrid.prototype = {
 
     //$item = $($('.item')[2]);
 
-    this.animateStep($item).done(function (schedule) {
-      if (schedule)
-        setTimeout(this.animateStep.bind(this, $item), (Math.random() * 2 + 2) * 1000);
+    this.animateStep($item).then(function (step) {
+      if (step)
+        setTimeout(this.animateStep.bind(this, $item, step), (Math.random() * 2 + 3) * 1000);
     }.bind(this));
 
-    setTimeout(this.animate.bind(this), (Math.random() * 4 + 4) * 1000);
+    setTimeout(this.animate.bind(this), (Math.random() * 3 + 2) * 1000);//2 till max 6 seconds between animations
   },
 
-  animateStep: function ($item) {
+  animateStep: function ($item, gotoStep) {
     return $.Deferred(function (dfd) {
-      var step = $item.data('step') || 'uninitialized';
+      var step = gotoStep || $item.data('step') || 'uninitialized';
 
       //if somehow we are triggert twice at the same time we bail out the second time
       if (step == 'animating') return;
@@ -101,8 +101,7 @@ MetroGrid.prototype = {
         $item.children()
           .animate({ top: -(($item.hasClass('failing') && $item.find('.item-images img').length) ? 130 : 120) }, 'slow', function () {
             setTimeout(function () {
-              $item.data('step', 'down');
-              dfd.resolve(true);
+              dfd.resolve('down');
             }.bind(this), 1000);
           }.bind(this));
       }
