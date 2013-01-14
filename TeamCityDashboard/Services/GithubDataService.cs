@@ -31,7 +31,7 @@ namespace TeamCityDashboard.Services
     {
       try
       {
-        string response = GetContents(eventsurl);
+        string response = GetEventsApiContents();
         if (!string.IsNullOrWhiteSpace(response))
         {
           JArray events = JArray.Parse(response);
@@ -54,11 +54,11 @@ namespace TeamCityDashboard.Services
       return Enumerable.Empty<PushEvent>();
     }
 
-    protected string GetContents(string relativeUrl)
+    protected string GetEventsApiContents()
     {
       try
       {
-        Uri uri = new Uri(string.Format("{0}{1}", API_BASE_URL, relativeUrl));
+        Uri uri = new Uri(string.Format("{0}{1}", API_BASE_URL, eventsurl));
         HttpWebRequest myHttpWebRequest = (HttpWebRequest)HttpWebRequest.Create(uri);
         myHttpWebRequest.UserAgent = "TeamCity CI Dashboard - https://github.com/crunchie84/teamcity-dashboard";
         myHttpWebRequest.Headers.Add("Authorization", "bearer " + oauth2token);
@@ -70,6 +70,9 @@ namespace TeamCityDashboard.Services
         {
           if (myWebResponse.StatusCode == HttpStatusCode.OK)
           {
+            //if we do not save the returned ETag we will always get the full list with latest changes instead of the real delta since we started polling.
+            LastReceivedEventsETAG = myWebResponse.Headers.Get("ETag");
+
             using (Stream responseStream = myWebResponse.GetResponseStream())
             {
               StreamReader myStreamReader = new StreamReader(responseStream, Encoding.Default);
@@ -80,7 +83,7 @@ namespace TeamCityDashboard.Services
       }
       catch (Exception e)
       {
-        throw new HttpException(string.Format("Error while retrieving url '{0}': {1}", relativeUrl, e.Message), e);
+        throw new HttpException(string.Format("Error while retrieving url '{0}': {1}", eventsurl, e.Message), e);
       }
       return string.Empty;
     }
