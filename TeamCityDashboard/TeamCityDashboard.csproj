@@ -82,6 +82,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Services\GithubDataService.cs" />
+    <Compile Include="Controllers\PushEvent.cs" />
     <Compile Include="Interfaces\ICodeStatistics.cs" />
     <Compile Include="Interfaces\IBuildRun.cs" />
     <Compile Include="Interfaces\IBuildConfig.cs" />

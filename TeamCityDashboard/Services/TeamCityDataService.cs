@@ -15,7 +15,7 @@ namespace TeamCityDashboard.Services
 {
   public class TeamCityDataService : AbstractHttpDataService
   {
-    public TeamCityDataService(string baseUrl, string username, string password) : base(baseUrl, username, password) { }
+    public TeamCityDataService(string baseUrl, string username, string password, ICacheService cacheService) : base(baseUrl, username, password, cacheService) { }
 
     /// <summary>
     /// url to retrieve list of projects in TeamCity

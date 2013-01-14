@@ -16,15 +16,14 @@ namespace TeamCityDashboard.Services
     protected readonly string UserName;
     protected readonly string Password;
 
-    protected static ICacheService CacheService = null;
+    protected readonly ICacheService CacheService;
 
-    public AbstractHttpDataService(string baseUrl, string username, string password)
+    public AbstractHttpDataService(string baseUrl, string username, string password, ICacheService cacheService)
     {
       this.BaseUrl = baseUrl;
       this.UserName = username;
       this.Password = password;
-      if (CacheService == null)
-        CacheService = new WebCacheService();
+      this.CacheService = cacheService;
     }
 
     /// <summary>

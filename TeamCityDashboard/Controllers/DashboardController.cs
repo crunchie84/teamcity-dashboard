@@ -14,16 +14,20 @@ namespace TeamCityDashboard.Controllers
   {
     private static TeamCityDataService TeamCityDataService = null;
     private static SonarDataService SonarDataService = null;
+    private static GithubDataService GithubDataService = null;
 
     public DashboardController()
     {
+      ICacheService cacheService = new WebCacheService();
+
       //singletonish ftw
       if (TeamCityDataService == null)
       {
         TeamCityDataService = new TeamCityDataService(
           ConfigurationManager.AppSettings["teamcity.baseUrl"],
           ConfigurationManager.AppSettings["teamcity.username"],
-          ConfigurationManager.AppSettings["teamcity.password"]
+          ConfigurationManager.AppSettings["teamcity.password"],
+          cacheService
         );
       }
 
@@ -33,7 +37,17 @@ namespace TeamCityDashboard.Controllers
         SonarDataService = new SonarDataService(
           ConfigurationManager.AppSettings["sonar.baseUrl"],
           ConfigurationManager.AppSettings["sonar.username"],
-          ConfigurationManager.AppSettings["sonar.password"]
+          ConfigurationManager.AppSettings["sonar.password"],
+          cacheService
+        );
+      }
+
+      if (GithubDataService == null)
+      {
+        GithubDataService = new TeamCityDashboard.Services.GithubDataService(
+          (string)ConfigurationManager.AppSettings["github.oauth2token"],
+          (string)ConfigurationManager.AppSettings["github.api.events.url"]
+          //,cacheService
         );
       }
     }
@@ -61,6 +75,19 @@ namespace TeamCityDashboard.Controllers
         Data = projectsWithSonarDataAdded
       };
     }
+
+    [UrlRoute(Name = "Github push events", Path = "pushevents")]
+    [HttpGet()]
+    public ActionResult PushEvents()
+    {
+      return new JsonResult()
+      {
+        JsonRequestBehavior = JsonRequestBehavior.AllowGet,
+        ContentEncoding = System.Text.Encoding.UTF8,
+        Data = GithubDataService.GetRecentEvents()
+      };
+    }
+
 
     [UrlRoute(Name = "Home", Path = "")]
     [HttpGet()]

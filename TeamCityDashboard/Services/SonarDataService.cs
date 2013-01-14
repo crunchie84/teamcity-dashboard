@@ -10,7 +10,7 @@ namespace TeamCityDashboard.Services
 {
   public class SonarDataService : AbstractHttpDataService
   {
-    public SonarDataService(string baseUrl, string username, string password) : base(baseUrl, username, password) { }
+    public SonarDataService(string baseUrl, string username, string password, ICacheService cacheService) : base(baseUrl, username, password, cacheService) { }
 
     //http://sonar.q42.net/api/resources?resource=NegenTwee:PartnerApi&metrics=ncloc,coverage&verbose=true&includetrends=true
     private const string PROJECT_TRENDS_URL = @"/api/resources?resource={0}&metrics={1}&verbose=true&includetrends=true&format=xml";
