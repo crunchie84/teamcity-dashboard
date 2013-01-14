@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Web;
+using log4net;
+using Newtonsoft.Json.Linq;
 using TeamCityDashboard.Models;
 
 namespace TeamCityDashboard.Services
 {
   public class GithubDataService
   {
+    private static readonly ILog log = LogManager.GetLogger(typeof(GithubDataService));
+    
     private string oauth2token;
     private string eventsurl;
     private const string API_BASE_URL = @"https://api.github.com";
@@ -18,12 +25,64 @@ namespace TeamCityDashboard.Services
       this.eventsurl = eventsurl;
     }
 
-
     private string LastReceivedEventsETAG;
 
     public IEnumerable<TeamCityDashboard.Models.PushEvent> GetRecentEvents()
     {
+      try
+      {
+        string response = GetContents(eventsurl);
+        if (!string.IsNullOrWhiteSpace(response))
+        {
+          JArray events = JArray.Parse(response);
+          return from evt in events
+                           where (string)evt["type"] == "PushEvent" 
+                           select new PushEvent { 
+                              RepositoryName = (string)evt["repo"]["name"],
+                              BranchName = ((string)evt["payload"]["ref"]).Replace("refs/heads/", ""),
+                              ActorUsername = (string)evt["actor"]["login"],
+                              ActorGravatarId = (string)evt["actor"]["gravatar_id"],
+                              AmountOfCommits = (int)evt["payload"]["size"],
+                              Created = (DateTime)evt["created_at"]
+                           }; 
+        }
+      }
+      catch (Exception ex)
+      {
+        log.Error(ex);
+      }
       return Enumerable.Empty<PushEvent>();
+    }
+
+    protected string GetContents(string relativeUrl)
+    {
+      try
+      {
+        Uri uri = new Uri(string.Format("{0}{1}", API_BASE_URL, relativeUrl));
+        HttpWebRequest myHttpWebRequest = (HttpWebRequest)HttpWebRequest.Create(uri);
+        myHttpWebRequest.UserAgent = "TeamCity CI Dashboard - https://github.com/crunchie84/teamcity-dashboard";
+        myHttpWebRequest.Headers.Add("Authorization", "bearer " + oauth2token);
+
+        if (!string.IsNullOrWhiteSpace(LastReceivedEventsETAG))
+          myHttpWebRequest.Headers.Add("If-None-Match", LastReceivedEventsETAG);
+
+        using (HttpWebResponse myWebResponse = (HttpWebResponse)myHttpWebRequest.GetResponse())
+        {
+          if (myWebResponse.StatusCode == HttpStatusCode.OK)
+          {
+            using (Stream responseStream = myWebResponse.GetResponseStream())
+            {
+              StreamReader myStreamReader = new StreamReader(responseStream, Encoding.Default);
+              return myStreamReader.ReadToEnd();
+            }
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        throw new HttpException(string.Format("Error while retrieving url '{0}': {1}", relativeUrl, e.Message), e);
+      }
+      return string.Empty;
     }
   }
 }

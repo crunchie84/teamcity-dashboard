@@ -11,6 +11,7 @@ namespace TeamCityDashboard.Models
     /// event=>actor=>login
     /// </summary>
     public string ActorUsername { get; set; }
+    
     /// <summary>
     /// event=>actor=>gravatar_id
     /// </summary>    
