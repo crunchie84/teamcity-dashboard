@@ -4,15 +4,9 @@ Dashboard to display useful information from TeamCity and if available merges it
 
 Installation
 ------
- * Compile project (.Net 4.0). This will automatically copy the web.example.config => web.config
- * Modify the web.config settings for your TeamCity and Sonar instance
-	<add key="teamcity.baseUrl" value="http://your-teamcity-env.com"/>
-	<add key="teamcity.username" value="a-valid-teamcity-username"/>
-	<add key="teamcity.password" value="his-password"/>
-	<add key="sonar.baseUrl" value="http://your-sonar-env.com"/>
-	<add key="sonar.username" value="a-valid-teamcity-username"/>
-	<add key="sonar.password" value="his-password"/> 
- * Hook up the site in IIS (.Net 4.0)
+ * Compile project (.Net 4.0). This will automatically copy the web.example.config => web.config;
+ * Modify the web.config to point to your teamcity, sonar & github + valid credentials;
+ * Hook up the site in IIS (.Net 4.0);
  * Visit the dashboard on the configured URL. 
  
 Configuration
@@ -23,6 +17,12 @@ Sonar integration
 ------
 The sonar integration is done via configuration in TeamCity. Add the following parameter to your project configuration in TeamCity:
  * `sonar.project.key` containing the exact project key as found in Sonar
+
+Github integration
+------
+For displaying events in your organization (pushes?) to github you can authenticate the dashboard to access your github account. You need to generate an Oauth2 token which is quite easy:
+`curl -i -u "user:pass" https://api.github.com/authorizations -d '{"scopes":["repo"]}'`
+(Documentation: http://developer.github.com/v3/oauth/#create-a-new-authorization). I do not know exactly which `scopes` are required for what but the `repo` value let me access the (private) events of my organization which was what i needed.
 
 Project logo
 ------ 

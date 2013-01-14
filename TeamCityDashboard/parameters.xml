@@ -20,9 +20,16 @@
   <parameter name="Sonar Username" defaultValue="my-dashboard-user" description="Sonar user account for polling project details">
     <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='sonar.username']/@value" />
   </parameter>
-    <parameter name="Sonar Password" defaultValue="" description="Password of the user account to use for Sonar polling">
+  <parameter name="Sonar Password" defaultValue="" description="Password of the user account to use for Sonar polling">
     <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='sonar.password']/@value" />
-  </parameter>  
+  </parameter>
+
+  <parameter name="Github Oauth2Token" defaultValue="" description="Token to use for the github API">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='github.oauth2token']/@value" />
+  </parameter>
+  <parameter name="Github events api url" defaultValue="" description="Filled in url to fetch events from">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='github.api.events.url']/@value" />
+  </parameter>
 
   <parameter name="Logging path with filename prefix" defaultValue="c:/Inetpub/teamcity-dashboard/logs/website-" description="Complete path + filename prefix for logfiles">
     <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/log4net/appender[@name='file']/file/@value" />
