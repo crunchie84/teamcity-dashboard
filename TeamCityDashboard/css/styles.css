@@ -140,7 +140,8 @@ h4,
 }
 
 
-.item .item-text .logo
+.item .item-text .logo,
+.item .item-text .pusher
 {
   max-width: 30px;
   max-height: 30px;
@@ -183,6 +184,17 @@ h4,
   float: left;
   width: 125px;
   height: 125px;
+}
+
+.group #events
+{
+  background-color: yellow;
+  display: block;
+}
+
+.event
+{
+  background-color: #1b63e5;
 }
 
 .successful

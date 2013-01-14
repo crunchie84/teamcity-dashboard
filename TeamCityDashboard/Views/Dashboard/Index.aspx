@@ -126,8 +126,40 @@
 
             layout();
         });
-        window.setTimeout(loadData.bind(this, layout), 5 * 1000);
+        window.setTimeout(loadData.bind(this, layout), 10 * 1000);
     };
+
+    function loadEvents() {
+        $.getJSON("pushevents").done(function (data) {
+            var $eventsContainer = $('#events .column-container');
+
+            //TODO remove this when real animation is done.
+            if (data.length > 0) {
+                $eventsContainer.empty();
+                //clear current content for now (will be: if more then 5 remove oldest entry in iteration)
+            }
+            
+            $.each(data, function (_, pushEvent) {
+                //create new element
+                var $a = $('<a href="#" id="" class="item event">');
+                //$a.hide();
+                var $text = $('<div class="item-text">');
+                $a.append($text);
+                var created = new Date(parseInt(pushEvent.Created.substr(6)));
+                $text.append('<p class=large>' + created.getHours() + ':' + created.getMinutes() + ' - ' + pushEvent.BranchName + ' at ' + pushEvent.RepositoryName + '</p>');
+                $text.append('<div class="event-info"><p class="small">' + pushEvent.ActorUsername + ' pushed ' + pushEvent.AmountOfCommits + ' commits to ' + pushEvent.BranchName + ' at ' + pushEvent.RepositoryName + '</p></div>');
+                $text.append('<img src="http://www.gravatar.com/avatar/' + pushEvent.ActorGravatarId + '?s=500" class="pusher"/>');
+
+                //TODO animate each new event to fade into view & slide into view from right to left
+                $eventsContainer.append($a);
+                $a.fadeIn(700, function () {
+                    //TODO if we have more items then are allowed slide the first visible item left out of the window (&remove from DOM)
+                    //but because animations are in a secondary thread they will all fadein at once and not remove the surpluss elements.
+                });
+            });
+        });
+        window.setTimeout(loadEvents.bind(this), 10 * 1000);
+    }
 
     //copy from http://www.sitepoint.com/html5-full-screen-api/
     var pfx = ["webkit", "moz", "ms", "o", ""];
@@ -164,6 +196,22 @@
             <div class="column-container"></div>
         </div>
     </div>
+    <div class="group-container">
+        <div class="group" id="events">
+            <div class="column-container">
+                <%--
+                    <a href="#" class="item event" style="height: 120px; width: 250px;">
+                    <div class="item-text">
+                        <p class="large">14:41 - master at Q42/Q42.nl</p>
+                        <div class="event-info">
+                            <p class="small">crunchie84 pushed 2 commits to master at Q42/Q42.nl at 14:51</p>
+                        </div>
+                        <img src="http://www.gravatar.com/avatar/30eeda7130e6999a87749cafe01e1feb" class="pusher">
+                    </div>
+                </a>--%>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -174,4 +222,5 @@
         grid.layout();
         grid.animate();
     });
+    loadEvents();
 </script>
