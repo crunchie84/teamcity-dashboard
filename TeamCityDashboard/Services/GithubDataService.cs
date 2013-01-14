@@ -25,13 +25,11 @@ namespace TeamCityDashboard.Services
       this.eventsurl = eventsurl;
     }
 
-    private string LastReceivedEventsETAG;
-
-    public IEnumerable<TeamCityDashboard.Models.PushEvent> GetRecentEvents()
+    public IEnumerable<TeamCityDashboard.Models.PushEvent> GetRecentEvents(bool ignoreEtag=false)
     {
       try
       {
-        string response = GetEventsApiContents();
+        string response = GetEventsApiContents(ignoreEtag);
         if (!string.IsNullOrWhiteSpace(response))
         {
           JArray events = JArray.Parse(response);
@@ -54,7 +52,8 @@ namespace TeamCityDashboard.Services
       return Enumerable.Empty<PushEvent>();
     }
 
-    protected string GetEventsApiContents()
+    private string LastReceivedEventsETAG;
+    protected string GetEventsApiContents(bool ignoreEtag)
     {
       try
       {
@@ -63,7 +62,7 @@ namespace TeamCityDashboard.Services
         myHttpWebRequest.UserAgent = "TeamCity CI Dashboard - https://github.com/crunchie84/teamcity-dashboard";
         myHttpWebRequest.Headers.Add("Authorization", "bearer " + oauth2token);
 
-        if (!string.IsNullOrWhiteSpace(LastReceivedEventsETAG))
+        if (!string.IsNullOrWhiteSpace(LastReceivedEventsETAG) && !ignoreEtag)
           myHttpWebRequest.Headers.Add("If-None-Match", LastReceivedEventsETAG);
 
         using (HttpWebResponse myWebResponse = (HttpWebResponse)myHttpWebRequest.GetResponse())

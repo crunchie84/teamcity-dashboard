@@ -80,11 +80,17 @@ namespace TeamCityDashboard.Controllers
     [HttpGet()]
     public ActionResult PushEvents()
     {
+#if DEBUG
+      bool ignoreEtag = true;
+#else
+      bool ignoreEtag = false;
+#endif
+
       return new JsonResult()
       {
         JsonRequestBehavior = JsonRequestBehavior.AllowGet,
         ContentEncoding = System.Text.Encoding.UTF8,
-        Data = GithubDataService.GetRecentEvents()
+        Data = GithubDataService.GetRecentEvents(ignoreEtag)
       };
     }
 
