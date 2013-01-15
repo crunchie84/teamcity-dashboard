@@ -82,12 +82,12 @@
                     });
                 }
                 else {
-                    $a.append($extraText);//we have extra info to animate
-
                     $a.addClass('successful')
                     $text.append('<p class=large>' + name + '</p>');
 
                     if (project.Statistics != null) {
+                        $a.append($extraText);//we have extra info to animate
+
                         //add statistics to animation
                         $text.append(
                             '<div class="statistics-container">'+
@@ -104,12 +104,7 @@
                     else {
                         //append buildstep information to animation + summary
                         $text.append('<p class="small build-steps-count">' + project.BuildConfigs.length + ' build ' + (project.BuildConfigs.length > 1 ? 'steps' : 'step') + '</p>');
-
-                        $.each(project.BuildConfigs, function (_, step) {
-                            $extraText.append('<p id=' + step.Id + ' class=small>'
-                                            + '<a href="' + step.Url + '">' + step.Name + '</a></p>');
-                        });
-                    }
+                     }
                 }
 
                 //last part - add icon if available
