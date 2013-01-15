@@ -132,16 +132,21 @@
     function loadEvents() {
         $.getJSON("pushevents").done(function (data) {
             var $eventsContainer = $('#events .column-container');
-
+            var $currentEvents = $eventsContainer.find('.event');
             //TODO remove this when real animation is done.
-            if (data.length > 0) {
-                console.log('here');
-                $.each($eventsContainer.find('.event'), function (idx, currentEvent) {
+            var newTotal = data.length + $currentEvents.length;
+            if (newTotal > 5) {
+                //remove the amount of too much items
+
+                $.each($currentEvents, function (idx, currentEvent) {
                     var $evt = $(currentEvent);
-                    console.log('going to fadeout');
-                    $evt.fadeOut(700, function () {
+                    $evt.fadeOut(400, function () {
                         $evt.remove();
                     });
+
+                    //now enough?
+                    newTotal--;
+                    if (newTotal == 5) return false;
                 });
                 //$eventsContainer.empty();
                 //clear current content for now (will be: if more then 5 remove oldest entry in iteration)
@@ -160,11 +165,11 @@
                 $text.append('<div class="event-info"><p class="small">' + pushEvent.ActorUsername + ' pushed ' + pushEvent.AmountOfCommits + ' commits to ' + pushEvent.BranchName + ' at ' + pushEvent.RepositoryName + '</p></div>');
                 $text.append('<img src="http://www.gravatar.com/avatar/' + pushEvent.ActorGravatarId + '?s=500" class="pusher"/>');
 
-                //TODO animate each new event to fade into view & slide into view from right to left
-                $eventsContainer.append($a);
-                $a.fadeIn(700, function () {
-                    //TODO if we have more items then are allowed slide the first visible item left out of the window (&remove from DOM)
-                    //but because animations are in a secondary thread they will all fadein at once and not remove the surpluss elements.
+                //simple animation
+                $a.fadeOut(0, function () {
+                    $eventsContainer.append($a);
+                    $a.fadeIn(700, function () {
+                    });
                 });
             });
         });
