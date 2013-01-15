@@ -156,8 +156,11 @@
                 var $text = $('<div class="item-text">');
                 $a.append($text);
                 var created = new Date(parseInt(pushEvent.Created.substr(6)));
-                $text.append('<p class=large>' + created.getHours() + ':' + created.getMinutes() + ' - ' + pushEvent.BranchName + ' at ' + pushEvent.RepositoryName + '</p>');
-                $text.append('<div class="event-info"><p class="small">' + pushEvent.ActorUsername + ' pushed ' + pushEvent.AmountOfCommits + ' commits to ' + pushEvent.BranchName + ' at ' + pushEvent.RepositoryName + '</p></div>');
+                var formatted = "" + (created.getHours() < 10 ? "0" + created.getHours() : "" + created.getHours());
+                formatted += ':' + (created.getMinutes() < 10 ? "0" + created.getMinutes() : "" + created.getMinutes());
+
+                $text.append('<p class=large>' + formatted + ' - ' + pushEvent.RepositoryName + '</p>');
+                $text.append('<div class="event-info"><p class="small">' + pushEvent.ActorUsername + ' pushed ' + pushEvent.AmountOfCommits + ' commits to branch <em>' + pushEvent.BranchName + '</em></p></div>');
                 $text.append('<img src="http://www.gravatar.com/avatar/' + pushEvent.ActorGravatarId + '?s=500" class="pusher"/>');
 
                 //simple animation
