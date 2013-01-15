@@ -135,11 +135,21 @@
 
             //TODO remove this when real animation is done.
             if (data.length > 0) {
-                $eventsContainer.empty();
+                console.log('here');
+                $.each($eventsContainer.find('.event'), function (idx, currentEvent) {
+                    var $evt = $(currentEvent);
+                    console.log('going to fadeout');
+                    $evt.fadeOut(700, function () {
+                        $evt.remove();
+                    });
+                });
+                //$eventsContainer.empty();
                 //clear current content for now (will be: if more then 5 remove oldest entry in iteration)
             }
             
-            $.each(data, function (_, pushEvent) {
+            $.each(data, function (idx, pushEvent) {
+                if (idx > 4) return false;//more then enough elements
+
                 //create new element
                 var $a = $('<a href="#" id="" class="item event">');
                 //$a.hide();
