@@ -6,14 +6,15 @@ using TeamCityDashboard.Interfaces;
 
 namespace TeamCityDashboard.Models
 {
+  [System.Diagnostics.DebuggerDisplay("Project {Id} - {Name}")]
   public class Project : IProject
   {
     public string Id { get; set; }
     public string Name { get; set; }
-    public IEnumerable<IBuildConfig> BuildConfigs { get; set; }
     public string Url { get; set; }
-
     public string IconUrl { get; set; }
+    public DateTime? LastBuildDate { get; set; }
+    public IEnumerable<IBuildConfig> BuildConfigs { get; set; }
 
     // sonar specific part
 

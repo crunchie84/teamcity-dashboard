@@ -21,7 +21,7 @@ namespace TeamCityDashboard.Services
     /// url to retrieve list of projects in TeamCity
     /// </summary>
     private const string URL_PROJECTS_LIST = @"/httpAuth/app/rest/projects";
-    
+
     /// <summary>
     /// url to retrieve details of given {0} project (buildtypes etc)
     /// </summary>
@@ -59,6 +59,17 @@ namespace TeamCityDashboard.Services
     /// <returns></returns>
     public IEnumerable<IProject> GetActiveProjects()
     {
+      var projects = getNonArchivedProjects().ToList();
+
+      var failing = projects.Where(p => p.BuildConfigs.Any(c => !c.CurrentBuildIsSuccesfull));
+      var success = projects.Where(p => p.BuildConfigs.All(c => c.CurrentBuildIsSuccesfull));
+
+      //only display the most recent 15 build projects together with the failing ones
+      return failing.Concat(success.OrderByDescending(p => p.LastBuildDate).Take(15));
+    }
+
+    private IEnumerable<IProject> getNonArchivedProjects()
+    {
       XmlDocument projectsPageContent = GetPageContents(URL_PROJECTS_LIST);
       if (projectsPageContent == null)
         yield break;
@@ -68,13 +79,7 @@ namespace TeamCityDashboard.Services
         var project = ParseProjectDetails(el.GetAttribute("id"), el.GetAttribute("name"));
         if (project == null)
           continue;
-
-        //only display this project if there are builds in the last 7 days OR something is broken
-        if (project.BuildConfigs.Any(c => !c.CurrentBuildIsSuccesfull) ||
-          project.BuildConfigs.Any(c => c.CurrentBuildDate != null && c.CurrentBuildDate.Value.AddDays(7) > DateTime.Now))
-        {
-          yield return project;
-        }
+        yield return project;
       }
     }
 
@@ -87,7 +92,10 @@ namespace TeamCityDashboard.Services
     private IProject ParseProjectDetails(string projectId, string projectName)
     {
       //determine details, archived? buildconfigs
-      XmlDocument projectDetails = GetPageContents(string.Format(URL_PROJECT_DETAILS, projectId));
+      XmlDocument projectDetails = CacheService.Get<XmlDocument>("project-details-" + projectId, () => { 
+        return GetPageContents(string.Format(URL_PROJECT_DETAILS, projectId)); 
+      }, 15 * 60);
+
       if (projectDetails == null)
         return null;
 
@@ -112,7 +120,8 @@ namespace TeamCityDashboard.Services
         Url = projectDetails.DocumentElement.GetAttribute("webUrl"),
         IconUrl = parseProjectProperty(projectDetails, "dashboard.project.logo.url"),
         SonarProjectKey = parseProjectProperty(projectDetails, "sonar.project.key"),
-        BuildConfigs = buildConfigs
+        BuildConfigs = buildConfigs,
+        LastBuildDate = (buildConfigs.Where(b => b.CurrentBuildDate.HasValue).Max(b => b.CurrentBuildDate.Value))
       };
     }
 
@@ -121,7 +130,7 @@ namespace TeamCityDashboard.Services
       var propertyElement = projectDetails.SelectSingleNode(string.Format("project/parameters/property[@name='{0}']/@value", propertyName));
       if (propertyElement != null)
         return propertyElement.Value;
-      
+
       return null;
     }
 
@@ -141,19 +150,20 @@ namespace TeamCityDashboard.Services
       ///retrieve details of last 100 builds and find out if the last (=first row) was succesfull or iterate untill we found the first breaker?
       XmlDocument buildResultsDoc = GetPageContents(string.Format(URL_BUILDS_LIST, id));
       XmlElement lastBuild = buildResultsDoc.DocumentElement.FirstChild as XmlElement;
-      
+
 
       DateTime? currentBuildDate = null;
       bool currentBuildSuccesfull = true;
       List<string> buildBreakerEmailaddress = new List<string>();
 
-      if(lastBuild != null){
+      if (lastBuild != null)
+      {
         currentBuildSuccesfull = lastBuild.GetAttribute("status") == "SUCCESS";//we default to true
-        
+
         //try to parse last date
         string buildDate = lastBuild.GetAttribute("startDate");
         DateTime theDate;
-        
+
         //TeamCity date format => 20121101T134409+0100
         if (DateTime.TryParseExact(buildDate, @"yyyyMMdd\THHmmsszz\0\0", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out theDate))
         {
@@ -224,7 +234,7 @@ namespace TeamCityDashboard.Services
         //retrieve userid who changed something//details
         XmlDocument changeDetailsDoc = GetPageContents(string.Format(URL_CHANGE_DETAILS, changeId));
         XmlElement userDetails = (changeDetailsDoc.SelectSingleNode("change/user") as XmlElement);
-        if(userDetails == null)
+        if (userDetails == null)
           continue;//sometimes a change is not linked to a user who commited it.. ?
 
         string userId = userDetails.GetAttribute("id");

@@ -114,6 +114,7 @@
     <Content Include="Scripts\jquery.crypt.js" />
     <Content Include="Scripts\jquery.masonry.min.js" />
     <Content Include="Scripts\jquery.min.js" />
+    <Content Include="Scripts\jquery.timeago.js" />
     <Content Include="Scripts\metro-grid.js" />
     <Content Include="Views\Dashboard\Index.aspx" />
     <Content Include="Web.config" />

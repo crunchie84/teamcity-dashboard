@@ -6,6 +6,7 @@ using TeamCityDashboard.Interfaces;
 
 namespace TeamCityDashboard.Models
 {
+  [System.Diagnostics.DebuggerDisplay("BuildConfig - {Id} - {Name} - CurrentBuildDate {CurrentBuildDate}")]
   public class BuildConfig : IBuildConfig
   {
     public string Id { get; set; }

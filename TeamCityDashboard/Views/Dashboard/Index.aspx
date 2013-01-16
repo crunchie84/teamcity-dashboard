@@ -12,6 +12,7 @@
 
 <script src="scripts/jquery.min.js"></script>
 <script src="scripts/jquery.crypt.js"></script>
+<script src="scripts/jquery.timeago.js"></script>
 <script src="scripts/metro-grid.js"></script>
 
 <script>
@@ -103,7 +104,8 @@
                     }
                     else {
                         //append buildstep information to animation + summary
-                        $text.append('<p class="small build-steps-count">' + project.BuildConfigs.length + ' build ' + (project.BuildConfigs.length > 1 ? 'steps' : 'step') + '</p>');
+                        var buildDate = new Date(parseInt(project.LastBuildDate.substr(6)));
+                        $text.append('<p class="small last-build-date">Last build <em>' + $.timeago(buildDate.toISOString()) + '</em></p>');
                      }
                 }
 

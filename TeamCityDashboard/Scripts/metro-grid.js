@@ -166,7 +166,7 @@ MetroGrid.prototype = {
           var wontFit = overflows ||
             $item.find('.item-text').outerHeight() > height ||
             $item.find('.item-text .statistics-container').length ||
-            ($item.find('.item-text .build-steps-count').position().top > 50 && $item.find('.item-text .logo').length);
+            ($item.find('.item-text .small').position().top > 50 && $item.find('.item-text .logo').length);
           if (wontFit || nrHalfs == 4) {
             $item.width(250);
             fstHalf = false;

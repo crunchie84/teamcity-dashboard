@@ -13,6 +13,7 @@ namespace TeamCityDashboard.Interfaces
     string IconUrl { get; }
     string SonarProjectKey { get; }
     IEnumerable<IBuildConfig> BuildConfigs { get; }
+    DateTime? LastBuildDate { get; }
     ICodeStatistics Statistics { get; }
   }
 }
