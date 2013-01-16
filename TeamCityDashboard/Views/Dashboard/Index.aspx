@@ -124,51 +124,57 @@
             var $eventsContainer = $('#events .column-container');
             var $currentEvents = $eventsContainer.find('.event');
             //TODO remove this when real animation is done.
+
+            var fadeOuts = [];
+
             var newTotal = data.length + $currentEvents.length;
-            if (newTotal > 5) {
-                //remove the amount of too much items
 
-                $.each($currentEvents, function (idx, currentEvent) {
-                    var $evt = $(currentEvent);
+            // fadeout all items which are the oldest and surplus of 5 (when adding the new items)
+            for (var i = 0; (newTotal - i) > 5 && i < $currentEvents.length ; i++) {
+                (function (){
+                    var $evt = $($currentEvents[i]);
+                    var evtFadeOutDfd = $.Deferred();
+                    fadeOuts.push(evtFadeOutDfd);
+
                     $evt.fadeOut(400, function () {
-                        $evt.remove();
+                        this.remove();
+                        console.log("removed one");
+                        evtFadeOutDfd.resolve();
                     });
-
-                    //now enough?
-                    newTotal--;
-                    if (newTotal == 5) return false;
-                });
-                //$eventsContainer.empty();
-                //clear current content for now (will be: if more then 5 remove oldest entry in iteration)
+                }());
             }
 
-            $.each(data, function (idx, pushEvent) {
-                if (idx > 4) return false;//more then enough elements
+            $.when.apply($, fadeOuts).then(function () {
+                console.log("going to start fadeins");
+                $.each(data, function (idx, pushEvent) {
+                    //the array of new items is new=>old so we only need the first 5 elements at max
+                    if (idx > 4) return false;//more then enough elements
 
-                //create new element
-                var $a = $('<a href="#" id="" class="item event">');
-                //$a.hide();
-                var $text = $('<div class="item-text">');
-                $a.append($text);
-                var created = new Date(parseInt(pushEvent.Created.substr(6)));
-                var formatted = "" + (created.getHours() < 10 ? "0" + created.getHours() : "" + created.getHours());
-                formatted += ':' + (created.getMinutes() < 10 ? "0" + created.getMinutes() : "" + created.getMinutes());
+                    //create new element
+                    var $a = $('<a href="#" id="" class="item event">');
+                    //$a.hide();
+                    var $text = $('<div class="item-text">');
+                    $a.append($text);
+                    var created = new Date(parseInt(pushEvent.Created.substr(6)));
+                    var formatted = "" + (created.getHours() < 10 ? "0" + created.getHours() : "" + created.getHours());
+                    formatted += ':' + (created.getMinutes() < 10 ? "0" + created.getMinutes() : "" + created.getMinutes());
 
-                $text.append('<p class=large>' + formatted + ' - ' + pushEvent.RepositoryName + '</p>');
-                $text.append('<div class="event-info"><p class="small">' + pushEvent.ActorUsername + ' pushed ' + pushEvent.AmountOfCommits + ' commits to branch <em>' + pushEvent.BranchName + '</em></p></div>');
-                $text.append('<img src="http://www.gravatar.com/avatar/' + pushEvent.ActorGravatarId + '?s=500" class="pusher"/>');
+                    $text.append('<p class=large>' + formatted + ' - ' + pushEvent.RepositoryName + '</p>');
+                    $text.append('<div class="event-info"><p class="small">' + pushEvent.ActorUsername + ' pushed ' + pushEvent.AmountOfCommits + ' commits to branch <em>' + pushEvent.BranchName + '</em></p></div>');
+                    $text.append('<img src="http://www.gravatar.com/avatar/' + pushEvent.ActorGravatarId + '?s=500" class="pusher"/>');
 
-                //simple animation
-                $a.fadeOut(0, function () {
-                    $eventsContainer.append($a);
-                    $a.fadeIn(700, function () {
+                    //simple animation
+                    $a.fadeOut(0, function () {
+                        $eventsContainer.append($a);
+                        $a.fadeIn(700, function () {
+                        });
                     });
                 });
+                layout();
             });
 
-            layout();
         });
-        window.setTimeout(loadEvents.bind(this), 10 * 1000);
+        window.setTimeout(loadEvents.bind(this, layout), 10 * 1000);
     }
 
     //copy from http://www.sitepoint.com/html5-full-screen-api/
