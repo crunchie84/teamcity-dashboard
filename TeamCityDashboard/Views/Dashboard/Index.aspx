@@ -98,7 +98,7 @@
                     else {
                         //append buildstep information to animation + summary
                         var buildDate = new Date(parseInt(project.LastBuildDate.substr(6)));
-                        $text.append('<p class="small last-build-date">Last build <em>' + $.timeago(buildDate.toISOString()) + '</em></p>');
+                        $text.append('<p class="small last-build-date"><em>' + $.timeago(buildDate.toISOString()) + '</em></p>');
                      }
                 }
 
