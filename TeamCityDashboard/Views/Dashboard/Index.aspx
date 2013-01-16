@@ -84,7 +84,7 @@
 
                         //add statistics to animation
                         $text.append(
-                            '<div class="statistics-container">'+
+                            '<div class="statistics-container">' +
                             '<p class="small"><span class="statistic LinesOfCode">Lines of code <span class="value">' + project.Statistics.NonCommentingLinesOfCode + '</span></span></p>' +
                             '<p class="small"><span class="statistic CodeCoveragePercentage">Test coverage <span class="value">' + project.Statistics.CodeCoveragePercentage + '%</span></span></p>' +
                             '</div>'
@@ -99,7 +99,7 @@
                         //append buildstep information to animation + summary
                         var buildDate = new Date(parseInt(project.LastBuildDate.substr(6)));
                         $text.append('<p class="small last-build-date"><em>' + $.timeago(buildDate.toISOString()) + '</em></p>');
-                     }
+                    }
                 }
 
                 //last part - add icon if available
@@ -119,7 +119,7 @@
         window.setTimeout(loadData.bind(this, layout), 10 * 1000);
     };
 
-    function loadEvents() {
+    function loadEvents(layout) {
         $.getJSON("pushevents").done(function (data) {
             var $eventsContainer = $('#events .column-container');
             var $currentEvents = $eventsContainer.find('.event');
@@ -141,7 +141,7 @@
                 //$eventsContainer.empty();
                 //clear current content for now (will be: if more then 5 remove oldest entry in iteration)
             }
-            
+
             $.each(data, function (idx, pushEvent) {
                 if (idx > 4) return false;//more then enough elements
 
@@ -165,6 +165,8 @@
                     });
                 });
             });
+
+            layout();
         });
         window.setTimeout(loadEvents.bind(this), 10 * 1000);
     }
@@ -230,5 +232,7 @@
         grid.layout();
         grid.animate();
     });
-    loadEvents();
+    loadEvents(function () {
+       grid.layout();
+    });
 </script>
