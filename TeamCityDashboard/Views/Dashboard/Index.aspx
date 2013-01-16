@@ -34,13 +34,6 @@
             $failing.find('.item').remove();
             $successful.find('.item').remove();
 
-            // WARNING: mutating array!
-            data.sort(function (x, y) {
-                return x.BuildConfigs.length == y.BuildConfigs.length
-                    ? x.Name < y.Name ? -1 : 0
-                    : x.BuildConfigs.length > y.BuildConfigs.length ? -1 : 1;
-            });
-
             $.each(data, function (_, project) {
                 var name = project.Name;
 
