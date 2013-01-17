@@ -138,14 +138,14 @@
 
                     $evt.fadeOut(400, function () {
                         this.remove();
-                        console.log("removed one");
+                        //console.log("removed one");
                         evtFadeOutDfd.resolve();
                     });
                 }());
             }
 
             $.when.apply($, fadeOuts).then(function () {
-                console.log("going to start fadeins");
+                //console.log("going to start fadeins");
                 $.each(data, function (idx, pushEvent) {
                     //the array of new items is new=>old so we only need the first 5 elements at max
                     if (idx > 4) return false;//more then enough elements

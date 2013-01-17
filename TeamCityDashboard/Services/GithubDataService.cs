@@ -33,7 +33,7 @@ namespace TeamCityDashboard.Services
         if (!string.IsNullOrWhiteSpace(response))
         {
           JArray events = JArray.Parse(response);
-          return from evt in events
+          var parsedEvents= (from evt in events
                            where (string)evt["type"] == "PushEvent" 
                            select new PushEvent { 
                               RepositoryName = (string)evt["repo"]["name"],
@@ -42,7 +42,11 @@ namespace TeamCityDashboard.Services
                               ActorGravatarId = (string)evt["actor"]["gravatar_id"],
                               AmountOfCommits = (int)evt["payload"]["size"],
                               Created = (DateTime)evt["created_at"]
-                           }; 
+                           }).ToList();
+          if (parsedEvents.Any())
+            log.DebugFormat("Retrieved {0} new push events from github (ignoredEtag={1})", parsedEvents.Count(), ignoreEtag);
+
+          return parsedEvents;
         }
       }
       catch (Exception ex)
@@ -80,9 +84,20 @@ namespace TeamCityDashboard.Services
           }
         }
       }
-      catch (Exception e)
+      catch (HttpException ex)
       {
-        throw new HttpException(string.Format("Error while retrieving url '{0}': {1}", eventsurl, e.Message), e);
+        if (ex.GetHttpCode() != (int)HttpStatusCode.NotModified)
+          throw;
+      }
+      catch (WebException ex)
+      {
+        var response = ex.Response as HttpWebResponse;
+        if(response == null || response.StatusCode != HttpStatusCode.NotModified)
+          throw;
+      }
+      catch (Exception ex)
+      {
+        throw new HttpException(string.Format("Error while retrieving url '{0}': {1}", eventsurl, ex.Message), ex);
       }
       return string.Empty;
     }
