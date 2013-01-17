@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using log4net;
 using Newtonsoft.Json.Linq;
+using TeamCityDashboard.Interfaces;
 using TeamCityDashboard.Models;
 
 namespace TeamCityDashboard.Services
@@ -14,13 +15,23 @@ namespace TeamCityDashboard.Services
   public class GithubDataService
   {
     private static readonly ILog log = LogManager.GetLogger(typeof(GithubDataService));
-    
-    private string oauth2token;
-    private string eventsurl;
+
+    private readonly ICacheService cacheService;
+    private readonly string oauth2token;
+    private readonly string eventsurl;
+
     private const string API_BASE_URL = @"https://api.github.com";
 
-    public GithubDataService(string oauth2token, string eventsurl)
+    public GithubDataService(string oauth2token, string eventsurl, ICacheService cacheService)
     {
+      if (cacheService == null)
+        throw new ArgumentNullException("cacheService");
+      if (string.IsNullOrWhiteSpace(oauth2token))
+        throw new ArgumentNullException("oauth2token");
+      if (string.IsNullOrWhiteSpace(eventsurl))
+        throw new ArgumentNullException("eventsurl");
+
+      this.cacheService = cacheService;
       this.oauth2token = oauth2token;
       this.eventsurl = eventsurl;
     }
@@ -32,6 +43,8 @@ namespace TeamCityDashboard.Services
         string response = GetEventsApiContents(ignoreEtag);
         if (!string.IsNullOrWhiteSpace(response))
         {
+          List<PushEvent> previousEvents = cacheService.Get<List<PushEvent>>("previous-pushevents", () => new List<PushEvent>(), 60 * 60);
+
           JArray events = JArray.Parse(response);
           var parsedEvents= (from evt in events
                            where (string)evt["type"] == "PushEvent" 
@@ -43,10 +56,19 @@ namespace TeamCityDashboard.Services
                               AmountOfCommits = (int)evt["payload"]["size"],
                               Created = (DateTime)evt["created_at"]
                            }).ToList();
-          if (parsedEvents.Any())
-            log.DebugFormat("Retrieved {0} new push events from github (ignoredEtag={1})", parsedEvents.Count(), ignoreEtag);
 
-          return parsedEvents;
+          IEnumerable<PushEvent> newPushEvents = Enumerable.Empty<PushEvent>();
+          if (parsedEvents.Any()){
+            //return only the new push messages
+            newPushEvents = parsedEvents.Where(evt => !previousEvents.Any(prev => prev.Created == evt.Created));
+
+            log.DebugFormat("Retrieved {0} new push events from github (ignoredEtag={1})", newPushEvents.Count(), ignoreEtag);
+
+            //save the new retrieved (total) events list for filtering the next results from github
+            cacheService.Set("previous-pushevents", parsedEvents, 60 * 60);
+          }
+
+          return newPushEvents;
         }
       }
       catch (Exception ex)

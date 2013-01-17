@@ -15,7 +15,7 @@ namespace TeamCityDashboard.Services
       if (item == null)
       {
         item = getItemCallback();
-        HttpRuntime.Cache.Insert(cacheId, item, null, System.Web.Caching.Cache.NoAbsoluteExpiration, new TimeSpan(0, 0, secondsToCache), CacheItemPriority.Normal, null);
+        Set(cacheId, item, secondsToCache);
       }
       return item;
     }
@@ -23,6 +23,11 @@ namespace TeamCityDashboard.Services
     public void Delete(string cacheId)
     {
       HttpRuntime.Cache.Remove(cacheId);
+    }
+
+    public void Set(string cacheId, object item, int secondsToCache)
+    {
+      HttpRuntime.Cache.Insert(cacheId, item, null, System.Web.Caching.Cache.NoAbsoluteExpiration, new TimeSpan(0, 0, secondsToCache), CacheItemPriority.Normal, null);
     }
   }
 }

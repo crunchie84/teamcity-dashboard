@@ -47,7 +47,7 @@ namespace TeamCityDashboard.Controllers
         GithubDataService = new TeamCityDashboard.Services.GithubDataService(
           (string)ConfigurationManager.AppSettings["github.oauth2token"],
           (string)ConfigurationManager.AppSettings["github.api.events.url"]
-          //,cacheService
+          ,cacheService
         );
       }
     }
@@ -94,7 +94,6 @@ namespace TeamCityDashboard.Controllers
         Data = GithubDataService.GetRecentEvents(ignoreEtag)
       };
     }
-
 
     [UrlRoute(Name = "Home", Path = "")]
     [HttpGet()]
