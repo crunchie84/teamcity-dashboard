@@ -30,9 +30,12 @@
             lastStr = str;
 
             var $failing = $('#failing');
+            //$failing.find('.item').remove();
+            $failing.find('group-column').remove();
+
             var $successful = $('#successful');
-            $failing.find('.item').remove();
-            $successful.find('.item').remove();
+            //$successful.find('.item').remove();
+            $successful.find('group-column').remove();
 
             $.each(data, function (_, project) {
                 var name = project.Name;

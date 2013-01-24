@@ -138,6 +138,7 @@ MetroGrid.prototype = {
       var $group = $(group);
       var $items = $group.find('.item');
 
+      $group.append($items);
       $group.find('.group-column').remove(); // from previous layout
 
       function mkColumn() {
@@ -162,6 +163,9 @@ MetroGrid.prototype = {
         if ($item.hasClass('successful')) {
           $item.width(120);
           var overflows = $item.find('.item-text p')[0].scrollWidth > $item.find('.item-text p')[0].clientWidth;
+
+          if ($item.attr('id') == 'project39')
+            debugger;
 
           var wontFit = overflows ||
             $item.find('.item-text').outerHeight() > height ||
