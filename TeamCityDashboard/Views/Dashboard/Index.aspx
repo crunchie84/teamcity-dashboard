@@ -13,6 +13,7 @@
 <script src="scripts/jquery.min.js"></script>
 <script src="scripts/jquery.crypt.js"></script>
 <script src="scripts/jquery.timeago.js"></script>
+<script src="scripts/jquery.masonry.js"></script>
 <script src="scripts/metro-grid.js"></script>
 
 <script>
@@ -29,13 +30,9 @@
             if (str == lastStr) return; // nothing changed
             lastStr = str;
 
-            var $failing = $('#failing');
-            //$failing.find('.item').remove();
-            $failing.find('group-column').remove();
-
-            var $successful = $('#successful');
-            //$successful.find('.item').remove();
-            $successful.find('group-column').remove();
+            var $buildConfigsContainer = $('#projectsContainer');
+            //cleanup old stuff
+            $buildConfigsContainer.find('.item').remove();
 
             $.each(data, function (_, project) {
                 var name = project.Name;
@@ -75,6 +72,7 @@
                             $breakers
                               .append('<img src=images/transparent.gif class=half-size>');
 
+                        //put the breaking peope images on top inside the project element
                         $a.prepend($breakers);
                     });
                 }
@@ -103,6 +101,7 @@
                         var buildDate = new Date(parseInt(project.LastBuildDate.substr(6)));
                         $text.append('<p class="small last-build-date"><em>' + $.timeago(buildDate.toISOString()) + '</em></p>');
                     }
+
                 }
 
                 //last part - add icon if available
@@ -111,10 +110,20 @@
                 }
 
                 //now append the project to the correct column
-                if (failingSteps.length)
-                    $failing.find('.column-container').append($a);
-                else
-                    $successful.find('.column-container').append($a);
+                $buildConfigsContainer.append($a);
+
+                //now try if it can be smaller - depends on being attached to the DOM
+                if ($a.hasClass('successful')) {
+                    $a.width(120);
+                    var overflows = $a.find('.item-text p')[0].scrollWidth > $a.find('.item-text p')[0].clientWidth;
+
+                    var wontFit = overflows ||
+                      $a.find('.item-text .statistics-container').length ||
+                      ($a.find('.item-text .small').position().top > 50 && $a.find('.item-text .logo').length);
+                    if (wontFit) {
+                        $a.width(250);
+                    }
+                }
             });
 
             layout();
@@ -134,7 +143,7 @@
 
             // fadeout all items which are the oldest and surplus of 5 (when adding the new items)
             for (var i = 0; (newTotal - i) > 5 && i < $currentEvents.length ; i++) {
-                (function (){
+                (function () {
                     var $evt = $($currentEvents[i]);
                     var evtFadeOutDfd = $.Deferred();
                     fadeOuts.push(evtFadeOutDfd);
@@ -179,32 +188,20 @@
         });
         window.setTimeout(loadEvents.bind(this, layout), 10 * 1000);
     }
-
-    //copy from http://www.sitepoint.com/html5-full-screen-api/
-    var pfx = ["webkit", "moz", "ms", "o", ""];
-    function RunPrefixMethod(obj, method) {
-        var p = 0, m, t;
-        while (p < pfx.length && !obj[m]) {
-            m = method;
-            if (pfx[p] == "") {
-                m = m.substr(0, 1).toLowerCase() + m.substr(1);
-            }
-            m = pfx[p] + m;
-            t = typeof obj[m];
-            if (t != "undefined") {
-                pfx = [pfx[p]];
-                return (t == "function" ? obj[m]() : obj[m]);
-            }
-            p++;
-        }
-    }
 </script>
 
 <div class="title">
     <h1>Q42 Continuous Integration</h1>
 </div>
 
-<div class="grid">
+<div id="projectsContainer">
+</div>
+
+<div id="pushMessagesContainer">
+</div>
+
+
+<%--<div class="grid">
     <div class="group-container">
         <div class="group" id="failing">
             <h2>Failing</h2>
@@ -218,7 +215,6 @@
     <div class="group-container">
         <div class="group" id="events">
             <div class="column-container">
-                <%--
                     <a href="#" class="item event" style="height: 120px; width: 250px;">
                     <div class="item-text">
                         <p class="large">14:41 - master at Q42/Q42.nl</p>
@@ -227,21 +223,31 @@
                         </div>
                         <img src="http://www.gravatar.com/avatar/30eeda7130e6999a87749cafe01e1feb" class="pusher">
                     </div>
-                </a>--%>
+                </a>
             </div>
         </div>
     </div>
-</div>
+</div>--%>
 
 <script>
-    window.grid = new MetroGrid();
-    grid.init($('.grid'));
+    //window.grid = new MetroGrid();
+    //grid.init($('.grid'));
 
     loadData(function () {
-        grid.layout();
-        grid.animate();
+        $('#projectsContainer').masonry({
+            // options
+            itemSelector: '.item',
+            columnWidth: 250
+        });
+        //grid.layout();
+        //grid.animate();
     });
-    loadEvents(function () {
-       grid.layout();
-    });
+
+    //loadData(function () {
+    //    grid.layout();
+    //    grid.animate();
+    //});
+    //loadEvents(function () {
+    //   grid.layout();
+    //});
 </script>

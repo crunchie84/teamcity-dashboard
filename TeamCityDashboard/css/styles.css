@@ -84,14 +84,14 @@ h4,
   height: 40px;
 }
 
-.grid
+#projectsContainer
 {
   position: absolute;
   left: 120px;
   top: 140px;
   bottom: 80px;
 }
-
+       /*
 .group
 {
   position: relative;
@@ -113,6 +113,7 @@ h4,
 {
   position: absolute;
 }
+  */
 
 .item
 {
