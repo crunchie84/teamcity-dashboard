@@ -214,7 +214,8 @@
                 itemSelector: '.item',
                 gutterWidth: 10,
                 columnWidth: 120,
-                isResizable: true
+                isResizable: true,
+                isAnimated: true
             });
         });
 
