@@ -134,7 +134,7 @@
 
     function loadEvents(layout) {
         $.getJSON("pushevents").done(function (data) {
-            var $eventsContainer = $('#events .column-container');
+            var $eventsContainer = $('#pushMessagesContainer');
             var $currentEvents = $eventsContainer.find('.event');
             //TODO remove this when real animation is done.
 
@@ -183,7 +183,7 @@
                         });
                     });
                 });
-                layout();
+                //layout();
             });
 
         });
@@ -198,37 +198,10 @@
 <div id="projectsContainer">
 </div>
 
+
 <div id="pushMessagesContainer">
+    <h2>Pushes to GitHub</h2>
 </div>
-
-
-<%--<div class="grid">
-    <div class="group-container">
-        <div class="group" id="failing">
-            <h2>Failing</h2>
-            <div class="column-container"></div>
-        </div>
-        <div class="group" id="successful">
-            <h2>Successful</h2>
-            <div class="column-container"></div>
-        </div>
-    </div>
-    <div class="group-container">
-        <div class="group" id="events">
-            <div class="column-container">
-                    <a href="#" class="item event" style="height: 120px; width: 250px;">
-                    <div class="item-text">
-                        <p class="large">14:41 - master at Q42/Q42.nl</p>
-                        <div class="event-info">
-                            <p class="small">crunchie84 pushed 2 commits to master at Q42/Q42.nl at 14:51</p>
-                        </div>
-                        <img src="http://www.gravatar.com/avatar/30eeda7130e6999a87749cafe01e1feb" class="pusher">
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>--%>
 
 <script>
     //window.grid = new MetroGrid();
@@ -247,6 +220,19 @@
 
         //grid.layout();
         //grid.animate();
+    });
+
+    loadEvents(function () {
+        //we do not use masonry on the push events for now
+        //var $container = $('#pushMessagesContainer');
+        //$container.imagesLoaded(function () {
+        //    $container.masonry({
+        //        itemSelector: '.item',
+        //        gutterWidth: 10,
+        //        columnWidth: 120,
+        //        isResizable: true
+        //    });
+        //});
     });
 
     //loadData(function () {

@@ -59,8 +59,8 @@ namespace TeamCityDashboard.Services
 
           IEnumerable<PushEvent> newPushEvents = Enumerable.Empty<PushEvent>();
           if (parsedEvents.Any()){
-            //return only the new push messages
-            newPushEvents = parsedEvents.Where(evt => !previousEvents.Any(prev => prev.Created == evt.Created));
+            //return only the new push messages unless we ignore the Etag, then we want all events
+            newPushEvents = parsedEvents.Where(evt => !previousEvents.Any(prev => prev.Created == evt.Created && !ignoreEtag));
 
             log.DebugFormat("Retrieved {0} new push events from github (ignoredEtag={1})", newPushEvents.Count(), ignoreEtag);
 

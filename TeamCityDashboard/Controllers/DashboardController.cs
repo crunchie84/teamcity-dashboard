@@ -84,7 +84,7 @@ namespace TeamCityDashboard.Controllers
 #if DEBUG
       bool ignoreEtag = true;
 #else
-      bool ignoreEtag = false;
+      bool ignoreEtag = true;
 #endif
 
       return new JsonResult()
