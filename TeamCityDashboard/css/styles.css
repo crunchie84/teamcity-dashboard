@@ -64,14 +64,14 @@ h4,
   line-height: 15pt; }
 
 #title {
-  margin: 60px 0 0 120px; }
+  margin: 60px 0 0 100px; }
 
 #projectsContainer {
-  margin-left: 120px;
-  margin-right: 120px; }
+  margin-left: 100px;
+  margin-right: 100px; }
 
 #pushMessagesContainer {
-  margin: 20px 120px 0 120px; }
+  margin: 20px 100px 0 100px; }
   #pushMessagesContainer .item {
     margin-right: 10px; }
 
