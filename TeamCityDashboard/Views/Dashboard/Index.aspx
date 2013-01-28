@@ -13,7 +13,7 @@
 <script src="scripts/jquery.min.js"></script>
 <script src="scripts/jquery.crypt.js"></script>
 <script src="scripts/jquery.timeago.js"></script>
-<script src="scripts/jquery.masonry.js"></script>
+<script src="scripts/jquery.masonry.min.js"></script>
 <script src="scripts/metro-grid.js"></script>
 
 <script>
@@ -72,8 +72,9 @@
                             $breakers
                               .append('<img src=images/transparent.gif class=half-size>');
 
-                        //put the breaking peope images on top inside the project element
-                        $a.prepend($breakers);
+                        //put the breaking peope images on top inside the project element if there are any
+                        if(breakers.length > 0)
+                            $a.prepend($breakers);
                     });
                 }
                 else {
@@ -190,8 +191,8 @@
     }
 </script>
 
-<div class="title">
-    <h1>Q42 Continuous Integration</h1>
+<div id="title">
+  <h1>Q42 Continuous Integration</h1>
 </div>
 
 <div id="projectsContainer">
@@ -234,11 +235,16 @@
     //grid.init($('.grid'));
 
     loadData(function () {
-        $('#projectsContainer').masonry({
-            // options
-            itemSelector: '.item',
-            columnWidth: 250
+        var $container = $('#projectsContainer');
+        $container.imagesLoaded(function () {
+            $container.masonry({
+                itemSelector: '.item',
+                gutterWidth: 10,
+                columnWidth: 120,
+                isResizable: true
+            });
         });
+
         //grid.layout();
         //grid.animate();
     });

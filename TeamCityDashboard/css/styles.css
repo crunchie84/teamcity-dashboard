@@ -1,209 +1,122 @@
-@font-face
-{
+@font-face {
   font-family: Segoe UI;
-  src: url('../fonts/SegoeWP.ttf');
-}
-@font-face
-{
-  font-family: Segoe UI Light;
-  src: url('../fonts/SegoeWP-Light.ttf');
-}
-@font-face
-{
-  font-family: Segoe UI Semibold;
-  src: url('../fonts/SegoeWP-Semibold.ttf');
-}
+  src: url("../fonts/SegoeWP.ttf"); }
 
-body
-{
+@font-face {
+  font-family: Segoe UI Light;
+  src: url("../fonts/SegoeWP-Light.ttf"); }
+
+@font-face {
+  font-family: Segoe UI Semibold;
+  src: url("../fonts/SegoeWP-Semibold.ttf"); }
+
+body {
   margin: 0;
   x-background-image: url(../images/grid-unit.png);
   background-color: #000;
   color: #fff;
   font-family: Segoe UI, Sans-Serif;
-  -webkit-overflow-scrolling: auto;
-}
+  -webkit-overflow-scrolling: auto; }
 
-a
-{
+a {
   text-decoration: none;
-  color: #fff;
-}
+  color: #fff; }
 
 h1,
-.xx-large
-{
+.xx-large {
   font-family: Segoe UI Light, Sans-Serif;
   font-size: 42pt;
-  margin: -15px 3px 16px -3px; /* Use margin to fix baseline */
-  line-height: 48pt;
-}
+  margin: -15px 3px 16px -3px;
+  /* Use margin to fix baseline */
+  line-height: 48pt; }
 
 h2,
-.x-large
-{
+.x-large {
   font-family: Segoe UI Light, Sans-Serif;
   font-size: 20pt;
-  margin: -7px 2px 7px -2px; /* Use margin to fix baseline */
-  line-height: 24pt;
-}
+  margin: -7px 2px 7px -2px;
+  /* Use margin to fix baseline */
+  line-height: 24pt; }
 
 h3,
-.large
-{
+.large {
   font-family: Segoe UI, Sans-Serif;
   font-size: 11pt;
-  margin: 4px 0 -4px 0; /* Use margin-top to fix baseline */
-  line-height: 15pt;
-}
+  margin: 4px 0 -4px 0;
+  /* Use margin-top to fix baseline */
+  line-height: 15pt; }
 
 p,
-.medium
-{
+.medium {
   font-family: Segoe UI, Sans-Serif;
   font-size: 11pt;
-  margin: 4px 2px -4px -2px; /* Use margin to fix baseline */
-  line-height: 15pt;
-}
+  margin: 4px 2px -4px -2px;
+  /* Use margin to fix baseline */
+  line-height: 15pt; }
 
 h4,
-.small
-{
+.small {
   font-family: Segoe UI, Sans-Serif;
   font-size: 9pt;
   font-weight: normal;
-  margin: 5px 2px -5px -2px; /* Use margin to fix baseline */
-  line-height: 15pt;
-}
+  margin: 5px 2px -5px -2px;
+  /* Use margin to fix baseline */
+  line-height: 15pt; }
 
-.title
-{
-  position: fixed;
-  left: 120px;
-  top: 60px;
-  height: 40px;
-}
+#title {
+  margin: 60px 0 0 120px; }
 
-#projectsContainer
-{
-  position: absolute;
-  left: 120px;
-  top: 140px;
-  bottom: 80px;
-}
-       /*
-.group
-{
-  position: relative;
+#projectsContainer {
+  margin-left: 120px;
+  margin-right: 120px; }
+
+.item {
   float: left;
-}
-
-.group h2
-{
-  position: absolute;
-}
-
-.group .column-container
-{
-  position: relative;
-  top: 40px;
-}
-
-.group .group-column
-{
-  position: absolute;
-}
-  */
-
-.item
-{
-  position: relative;
-  float: left;
-  margin: 0 10px 10px 0;
+  margin-bottom: 10px;
   width: 250px;
+  /*default width; we try to make them 120 with JS*/
   min-height: 120px;
-  overflow: hidden;
-}
+  overflow: hidden; }
+  .item.event {
+    background-color: #1b63e5; }
+  .item.successful {
+    background-color: #363; }
+  .item.failing {
+    background: #822; }
+  .item .item-images {
+    position: relative;
+    margin-bottom: 10px; }
+    .item .item-images .full-size {
+      display: block;
+      width: 250px;
+      height: 250px; }
+    .item .item-images .half-size {
+      display: block;
+      float: left;
+      width: 125px;
+      height: 125px; }
+  .item .item-text {
+    position: relative;
+    clear: left;
+    display: block;
+    padding: 7px 20px 10px 20px;
+    box-sizing: border-box;
+    height: 120px; }
+    .item .item-text .logo,
+    .item .item-text .pusher {
+      max-width: 30px;
+      max-height: 30px;
+      position: absolute;
+      bottom: 10px;
+      left: 20px; }
+    .item .item-text .statistics-container {
+      xfloat: right; }
+      .item .item-text .statistics-container .statistic .value {
+        font-size: 11pt;
+        float: right; }
+  .item .extra-text {
+    position: relative;
+    display: none;
+    padding: 0 20px 10px 20px;
+    box-sizing: border-box; }
 
-.item .item-images
-{
-  position: relative;
-}
-
-.item .item-text
-{
-  position: relative;
-  clear: left;
-  display: block;
-  padding: 7px 20px 10px 20px;
-  box-sizing: border-box;
-  height: 120px;
-}
-
-
-.item .item-text .logo,
-.item .item-text .pusher
-{
-  max-width: 30px;
-  max-height: 30px;
-  position: absolute;
-  bottom: 10px;
-  left:   20px;
-}
-.item .item-text .statistics-container
-{
-  xfloat: right;
-}
-
-.statistic .value
-{
-  font-size: 11pt;
-  float: right;
-}
-
-
-
-
-.item .extra-text
-{
-  position: relative;
-  display: none;
-  padding: 0 20px 10px 20px;
-  box-sizing: border-box;
-}
-
-.full-size
-{
-  display: block;
-  width: 250px;
-  height: 250px;
-}
-
-.half-size
-{
-  display: block;
-  float: left;
-  width: 125px;
-  height: 125px;
-}
-
-.group #events
-{
-  background-color: yellow;
-  display: block;
-}
-
-.event
-{
-  background-color: #1b63e5;
-}
-
-.successful
-{
-  background-color: #363;
-}
-
-.failing
-{
-  background: #822;
-}

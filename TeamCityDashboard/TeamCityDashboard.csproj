@@ -107,7 +107,9 @@
     <Compile Include="Services\WebCacheService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="css\styles.css" />
+    <Content Include="css\styles.css">
+      <DependentUpon>styles.scss</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Compile Include="Models\Project.cs" />
     <Content Include="images\grid-unit.png" />
@@ -128,6 +130,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="css\styles.scss">
+      <Compile>True</Compile>
+      <Minify>False</Minify>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
