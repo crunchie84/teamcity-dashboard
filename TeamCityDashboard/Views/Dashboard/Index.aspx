@@ -32,12 +32,19 @@
 
             var $buildConfigsContainer = $('#projectsContainer');
             //cleanup old stuff
-            $buildConfigsContainer.find('.item').remove();
+            //$buildConfigsContainer.find('.item').remove();
 
             $.each(data, function (_, project) {
                 var name = project.Name;
+                var id = project.Id;
+                var lastBuildDate = project.LastBuildDate.substr(6, 13);
 
-                var $a = $('<a href="' + project.Url + '" id=' + project.Id + ' class="item">');
+                var $oldItem = $('#' + id);
+                if ($oldItem.length > 0 && $oldItem.attr('data-last-builddate') == lastBuildDate)
+                    return;//skip this one, its the same
+
+                //okay; it is new or different; start creation of element
+                var $a = $('<a href="' + project.Url + '" id=' + project.Id + ' class="item" data-last-builddate="' + lastBuildDate + '">');
 
                 var $text = $('<div class="item-text">');
                 var $extraText = $('<div class=extra-text>');
@@ -99,19 +106,30 @@
                     }
                     else {
                         //append buildstep information to animation + summary
-                        var buildDate = new Date(parseInt(project.LastBuildDate.substr(6)));
+                        var buildDate = new Date(parseInt(lastBuildDate));
                         $text.append('<p class="small last-build-date"><em>' + $.timeago(buildDate.toISOString()) + '</em></p>');
                     }
 
                 }
 
-                //last part - add icon if available
+                //last part - add icon if available (always)
                 if (project.IconUrl != null) {
                     $text.append('<img src="' + project.IconUrl + '" class="logo" />');
                 }
 
-                //now append the project to the correct column
-                $buildConfigsContainer.append($a);
+                //add or re-add element
+                //debugger;
+                if ($oldItem.length == 1) {
+                    $oldItem.fadeOut(400, function () {
+                        //this.remove();
+                        $buildConfigsContainer.masonry('remove', $oldItem);
+                        $buildConfigsContainer.prepend($a).masonry('reload');
+                    });
+                }
+                else {
+                    $buildConfigsContainer.append($a).masonry('reload');
+                }
+                //$buildConfigsContainer.append($a);
 
                 //now try if it can be smaller - depends on being attached to the DOM
                 if ($a.hasClass('successful')) {
@@ -129,7 +147,9 @@
 
             layout();
         });
-        window.setTimeout(loadData.bind(this, layout), 10 * 1000);
+
+        //after initial callback to layout() we provide a stub function because masonry will be initialized
+        window.setTimeout(loadData.bind(this, function () { }), 10 * 1000);
     };
 
     function loadEvents(layout) {
@@ -151,7 +171,6 @@
 
                     $evt.fadeOut(400, function () {
                         this.remove();
-                        //console.log("removed one");
                         evtFadeOutDfd.resolve();
                     });
                 }());
