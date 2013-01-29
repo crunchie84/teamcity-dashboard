@@ -81,7 +81,7 @@ namespace TeamCityDashboard.Controllers
     [HttpGet()]
     public ActionResult PushEvents()
     {
-      bool ignoreEtag = false;
+      bool ignoreEtag = true;
       return new JsonResult()
       {
         JsonRequestBehavior = JsonRequestBehavior.AllowGet,

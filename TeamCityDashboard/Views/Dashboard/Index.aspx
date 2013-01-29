@@ -157,9 +157,8 @@
 
     function loadEvents(layout) {
         $.getJSON("pushevents").done(function (data) {
-            var $eventsContainer = $('#pushMessagesContainer');
+            var $eventsContainer = $('#pushMessagesContainer .items');
             var $currentEvents = $eventsContainer.find('.event');
-            //TODO remove this when real animation is done.
 
             var fadeOuts = [];
 
@@ -168,7 +167,7 @@
             // fadeout all items which are the oldest and surplus of 5 (when adding the new items)
             for (var i = 0; (newTotal - i) > 5 && i < $currentEvents.length ; i++) {
                 (function () {
-                    var $evt = $($currentEvents[i]);
+                    var $evt = $($currentEvents[4 - i]);
                     var evtFadeOutDfd = $.Deferred();
                     fadeOuts.push(evtFadeOutDfd);
 
@@ -180,10 +179,12 @@
             }
 
             $.when.apply($, fadeOuts).then(function () {
-                //console.log("going to start fadeins");
                 $.each(data, function (idx, pushEvent) {
-                    //the array of new items is new=>old so we only need the first 5 elements at max
-                    if (idx > 4) return false;//more then enough elements
+                    //the array of new items is new=>old so we only need the first 5 elements at max (index 4)
+                    if (idx > 4) return false;
+
+                    //this code is not completely correct - it adds new-> old from left->right which means that if multiple pushes happen the order can be incorrect.
+                    //since we mostly fetch 1 new push this will be added correctly. We can always optimize this code later
 
                     //create new element
                     var $a = $('<a href="#" id="" class="item event">');
@@ -200,7 +201,7 @@
 
                     //simple animation
                     $a.fadeOut(0, function () {
-                        $eventsContainer.append($a);
+                        $eventsContainer.prepend($a);
                         $a.fadeIn(700, function () {
                         });
                     });
@@ -221,8 +222,10 @@
 </div>
 
 
+
 <div id="pushMessagesContainer">
     <h2>Pushes to GitHub</h2>
+    <div class="items"></div>
 </div>
 
 <script>
