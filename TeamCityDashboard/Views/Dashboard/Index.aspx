@@ -124,7 +124,6 @@
                 }
 
                 //add or re-add element
-                //debugger;
                 if ($oldItem.length == 1) {
                     $oldItem.fadeOut(400, function () {
                         //this.remove();
@@ -135,17 +134,15 @@
                 else {
                     $buildConfigsContainer.append($a).masonry('reload');
                 }
-                //$buildConfigsContainer.append($a);
 
                 //now try if it can be smaller - depends on being attached to the DOM
                 if ($a.hasClass('successful')) {
                     $a.width(120);
                     var overflows = $a.find('.item-text p')[0].scrollWidth > $a.find('.item-text p')[0].clientWidth;
+                    var hasStatistics = $a.find('.item-text .statistics-container').length;
+                    var textOverflowsIcon = $a.find('.item-text .logo').length && ( $a.find('.item-text .small').position().top + $a.find('.item-text .small').height() >= 80);
 
-                    var wontFit = overflows ||
-                      $a.find('.item-text .statistics-container').length ||
-                      ($a.find('.item-text .small').position().top > 50 && $a.find('.item-text .logo').length);
-                    if (wontFit) {
+                    if (overflows || hasStatistics || textOverflowsIcon) {
                         $a.width(250);
                     }
                 }
