@@ -63,6 +63,12 @@
 
                         var $breakers = $('<div class=item-images>');
                         var breakers = step.PossibleBuildBreakerEmailAddresses;
+
+                        if (breakers.length > 1 && (breakers.length / 2) % 2 > 0) {
+                            /* we have an uneven amount of rows and small images */
+                            $breakers.addClass('images-uneven-rows');
+                        }
+
                         $.each(breakers, function (_, email) {
                             var emailHash = $().crypt({ method: 'md5', source: email });
                             var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=500';
@@ -73,7 +79,7 @@
                             $breakers
                               .append('<img src=' + url + ' class='
                                      + (failingSteps.length > 1 || breakers.length > 1 ? 'half-size' : 'full-size')
-                                     + ' alt="' + email + '" title="' + email + '">');
+                                     + ' alt="' + email + '" title="Breaker: ' + email + '">');
                         })
                         if (breakers.length % 2 == 1 && breakers.length > 1)
                             $breakers

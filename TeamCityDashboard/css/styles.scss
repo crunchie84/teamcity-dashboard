@@ -126,6 +126,12 @@ h4,
     position: relative;
 		margin-bottom: 10px;
 
+		&.images-uneven-rows{
+			/* Add extra margin bottom to negate the uneven rows slidly misaligning the blocks*/
+			overflow:hidden;
+			margin-bottom: 5px;
+		}
+
 		.full-size
 		{
 			display: block;
