@@ -53,8 +53,7 @@ namespace TeamCityDashboard.Services
     private const string URL_USER_EMAILADDRESS = @"/httpAuth/app/rest/users/id:{0}/email";
 
     /// <summary>
-    /// retrieve the list of active projects which have at least one visible 
-    /// buildconfig AND have active builds in the last week
+    /// take all failed projects with at least one build config visible AND max 15 successfull build configs
     /// </summary>
     /// <returns></returns>
     public IEnumerable<IProject> GetActiveProjects()

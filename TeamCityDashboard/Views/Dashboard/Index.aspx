@@ -229,9 +229,6 @@
 </div>
 
 <script>
-    //window.grid = new MetroGrid();
-    //grid.init($('.grid'));
-
     loadData(function () {
         var $container = $('#projectsContainer');
         $container.imagesLoaded(function () {
@@ -243,29 +240,9 @@
                 isAnimated: true
             });
         });
-
-        //grid.layout();
-        //grid.animate();
     });
 
     loadEvents(function () {
         //we do not use masonry on the push events for now
-        //var $container = $('#pushMessagesContainer');
-        //$container.imagesLoaded(function () {
-        //    $container.masonry({
-        //        itemSelector: '.item',
-        //        gutterWidth: 10,
-        //        columnWidth: 120,
-        //        isResizable: true
-        //    });
-        //});
     });
-
-    //loadData(function () {
-    //    grid.layout();
-    //    grid.animate();
-    //});
-    //loadEvents(function () {
-    //   grid.layout();
-    //});
 </script>
