@@ -138,25 +138,17 @@
 
                     }
 
-
                     if (project.Statistics != null) {
-                        //$a.append($extraText);//we have extra info to animate
-                        
-                        //add statistics to animation
+                        //add basic statistics to item box
                         $text.append(
                             '<div class="statistics-container">' +
                             '<p class="small"><span class="statistic LinesOfCode">Lines of code <span class="value">' + project.Statistics.NonCommentingLinesOfCode + '</span></span></p>' +
                             '<p class="small"><span class="statistic CodeCoveragePercentage">Test coverage <span class="value">' + project.Statistics.CodeCoveragePercentage + '%</span></span></p>' +
                             '</div>'
                             );
-
-                        //$extraText.append('<div class="statistic PercentageComments">Comments <span class="value">' + project.Statistics.CommentLinesPercentage + '%</span></div>');
-                        //$extraText.append('<div class="statistic AmountOfUnitTests">Amount of unit Tests <span class="value">' + project.Statistics.AmountOfUnitTests + '</span></div>');
-                        //$extraText.append('<div class="statistic CyclomaticComplexityClass">Average class complexity <span class="value">' + project.Statistics.CyclomaticComplexityClass + '</span></div>');
-                        //$extraText.append('<div class="statistic CyclomaticComplexityFunction">Average func complexity <span class="value">' + project.Statistics.CyclomaticComplexityFunction + '</span></div>');
                     }
                     else {
-                        //append buildstep information to animation + summary
+                        //append last build information to item box
                         var buildDate = new Date(parseInt(lastBuildDate));
                         $text.append('<p class="small last-build-date"><em>' + $.timeago(buildDate.toISOString()) + '</em></p>');
                     }

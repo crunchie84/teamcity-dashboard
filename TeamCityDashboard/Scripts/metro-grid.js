@@ -16,14 +16,10 @@ MetroGrid.prototype = {
   },
 
   animate: function () {
-    var $items = Math.random() < .5
-      ? this.$grid.find('.item.failing')
-      : this.$grid.find('.item.successful');
+    var $items = this.$grid.find('.item:has(.item-text)');
     var $item = $($items[Math.floor(Math.random() * $items.length)]);
 
-    //$item = $($('.item')[2]);
     if ($item != null) {
-      console.log("Going to start animation on element ", $item);
       this.animateStep($item).then(function (step) {
         if (step)
           setTimeout(this.animateStep.bind(this, $item, step), (Math.random() * 2 + 3) * 1000);
