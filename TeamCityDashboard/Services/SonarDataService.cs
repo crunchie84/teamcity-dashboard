@@ -47,11 +47,25 @@ namespace TeamCityDashboard.Services
     {
       string url = string.Format(CultureInfo.InvariantCulture, PROJECT_TIMEMACHINE_URL, projectKey, DateTime.Now.AddMonths(-2).ToString("s", CultureInfo.InvariantCulture));
       string csv = GetContents(url);
+      var lines = from line
+                     in csv.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Skip(1)
+                   let columns = line.Split(',')
+                   select new KeyValuePair<DateTime, double>(parseDateTime(columns.First()), double.Parse(columns.Skip(1).First()));
 
+      return lines;
+      //yield return new KeyValuePair<DateTime, double>(DateTime.Now, 1.2);
+      //yield return new KeyValuePair<DateTime, double>(DateTime.Now.AddSeconds(2), 3.4);
 
-      yield return new KeyValuePair<DateTime, double>(DateTime.Now, 1.2);
-      yield return new KeyValuePair<DateTime, double>(DateTime.Now.AddSeconds(2), 3.4);
+    }
 
+    private static DateTime parseDateTime(string date)
+    {
+      DateTime theDate;
+      if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:sszz\0\0", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out theDate))
+      {
+        return theDate;
+      }
+      return DateTime.MinValue;
     }
   }
 }

@@ -114,8 +114,6 @@
                                 dataTable.addRow([new Date(parseInt(dataRow[0].substr(6))), dataRow[1]]);
                             });
 
-
-                            //var data = google.visualization.arrayToDataTable(project.CoverageGraph, false);
                             var options = {
                                 title: 'Code Coverage',
                                 legend: { position: 'none' },
