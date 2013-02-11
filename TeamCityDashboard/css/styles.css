@@ -85,7 +85,8 @@ h4,
   .item.event {
     background-color: #1b63e5; }
   .item.successful {
-    background-color: #363; }
+    background-color: #363;
+    height: 120px; }
   .item.failing {
     background: #822; }
   .item .item-images {
@@ -125,7 +126,7 @@ h4,
         float: right; }
   .item .extra-text {
     position: relative;
-    xdisplay: none;
+    display: none;
     padding: 0 20px 10px 20px;
     box-sizing: border-box; }
     .item .extra-text .chart {

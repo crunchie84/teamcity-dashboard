@@ -114,6 +114,7 @@ h4,
 	&.successful
 	{
 		background-color: #363;
+		height: 120px;
 	}
 
 	&.failing
@@ -180,9 +181,10 @@ h4,
 	.extra-text
 	{
 		position: relative;
-		xdisplay: none;
+		display: none;
 		padding: 0 20px 10px 20px;
 		box-sizing: border-box;
+
 		.chart{
 			width: 200px;
 			height: 100px;

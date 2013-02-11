@@ -53,9 +53,6 @@ namespace TeamCityDashboard.Services
                    select new KeyValuePair<DateTime, double>(parseDateTime(columns.First()), double.Parse(columns.Skip(1).First(), CultureInfo.InvariantCulture));
 
       return lines;
-      //yield return new KeyValuePair<DateTime, double>(DateTime.Now, 1.2);
-      //yield return new KeyValuePair<DateTime, double>(DateTime.Now.AddSeconds(2), 3.4);
-
     }
 
     private static DateTime parseDateTime(string date)

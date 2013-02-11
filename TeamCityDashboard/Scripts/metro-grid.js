@@ -10,9 +10,9 @@ MetroGrid.prototype = {
     this.$grid = $grid;
 
     // dummy group for space
-    this.layout();
+    //this.layout();
 
-    $(window).bind('resize', this.layout.bind(this));
+    //$(window).bind('resize', this.layout.bind(this));
   },
 
   animate: function () {
@@ -22,13 +22,15 @@ MetroGrid.prototype = {
     var $item = $($items[Math.floor(Math.random() * $items.length)]);
 
     //$item = $($('.item')[2]);
+    if ($item != null) {
+      console.log("Going to start animation on element ", $item);
+      this.animateStep($item).then(function (step) {
+        if (step)
+          setTimeout(this.animateStep.bind(this, $item, step), (Math.random() * 2 + 3) * 1000);
+      }.bind(this));
+    }
 
-    this.animateStep($item).then(function (step) {
-      if (step)
-        setTimeout(this.animateStep.bind(this, $item, step), (Math.random() * 2 + 3) * 1000);
-    }.bind(this));
-
-    setTimeout(this.animate.bind(this), (Math.random() * 3 + 2) * 1000);//2 till max 6 seconds between animations
+    setTimeout(this.animate.bind(this), (Math.random() * 3 + 2) * 1000);//2 tot 5 seconds between animations
   },
 
   animateStep: function ($item, gotoStep) {
@@ -119,95 +121,6 @@ MetroGrid.prototype = {
       }
     }.bind(this)).promise();
   },
-
-  layout: function () {
-    this.animateableItems = [];
-
-    var gridHeight = this.$grid.outerHeight() - 40; // 40 for group title
-
-    this.$grid.find('.group').hide();
-    var $groups = this.$grid.find('.group').has('.item')
-    $groups
-      .show()
-      .css({ position: 'absolute' })
-    var totalCols = 0;
-    var groupCos;
-
-    $.each($groups, function (i, group) {
-      groupCols = 0;
-      var $group = $(group);
-      var $items = $group.find('.item');
-
-      $group.append($items);
-      $group.find('.group-column').remove(); // from previous layout
-
-      function mkColumn() {
-        var $c = $('<div class=group-column>');
-        $c.width(260);
-        $group.find('.column-container').append($c);
-        return $c;
-      }
-
-      var top = 0;
-      var nrHalfs = 0;
-      var fstHalf = false;
-      var sndHalf = false;
-      var $column = mkColumn();
-
-      $.each($items, function (_, item) {
-        var $item = $(item);
-        var height = Math.ceil($item.height() / 130) * 130 - 10;
-        $item.height(height)
-
-        // Try to make half width only if successful
-        if ($item.hasClass('successful')) {
-          $item.width(120);
-          var overflows = $item.find('.item-text p')[0].scrollWidth > $item.find('.item-text p')[0].clientWidth;
-
-          if ($item.attr('id') == 'project39')
-            debugger;
-
-          var wontFit = overflows ||
-            $item.find('.item-text').outerHeight() > height ||
-            $item.find('.item-text .statistics-container').length ||
-            ($item.find('.item-text .small').position().top > 50 && $item.find('.item-text .logo').length);
-          if (wontFit || nrHalfs == 4) {
-            $item.width(250);
-            fstHalf = false;
-            sndHalf = false;
-            nrHalfs = 0;
-          }
-          else if (fstHalf) {
-            fstHalf = false;
-            sndHalf = true;
-            nrHalfs++;
-          }
-          else {
-            fstHalf = true;
-            sndHalf = false;
-            nrHalfs++;
-          }
-        }
-
-        if (top + (sndHalf ? 0 : height) > gridHeight) {
-          groupCols++;
-          top = 0;
-          $column = mkColumn();
-          $column.css({ left: groupCols * 260 });
-        }
-
-        if (!sndHalf)
-          top += height + 10; // margin-bottom
-
-        $column.append($item);
-      });
-
-      groupCols++;
-      $group
-        .css({ left: totalCols * 260 + i * 80 })
-      totalCols += groupCols;
-    });
-  }
 };
 
 if (!Function.prototype.bind) {

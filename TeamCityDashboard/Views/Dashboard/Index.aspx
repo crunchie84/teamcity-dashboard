@@ -116,6 +116,8 @@
 
                             var options = {
                                 title: 'Code Coverage',
+                                width: 200,
+                                height: 100,
                                 legend: { position: 'none' },
                                 pointSize: 5,
                                 hAxis: {
@@ -272,6 +274,10 @@
 </div>
 
 <script>
+    window.grid = new MetroGrid();
+    grid.init($('#projectsContainer'));
+    grid.animate();
+
     loadData(function () {
         var $container = $('#projectsContainer');
         $container.imagesLoaded(function () {
