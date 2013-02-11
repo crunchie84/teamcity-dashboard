@@ -127,9 +127,9 @@ h4,
   .item .extra-text {
     position: relative;
     display: none;
-    padding: 0 20px 10px 20px;
+    padding: 0;
     box-sizing: border-box; }
     .item .extra-text .chart {
-      width: 200px;
-      height: 100px; }
+      width: 250px;
+      height: 120px; }
 

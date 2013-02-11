@@ -44,6 +44,7 @@ MetroGrid.prototype = {
         var mtop = $itemText.position()
           ? $item.height() - $itemText.position().top - $itemText.height() - 10
           : 0;
+        mtop = Math.floor(mtop / 120) * 120;
         $item.find('.extra-text')
           .css({ marginTop: mtop })
           .show();

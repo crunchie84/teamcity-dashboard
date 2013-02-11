@@ -116,8 +116,8 @@
 
                             var options = {
                                 title: 'Code Coverage',
-                                width: 200,
-                                height: 100,
+                                width: 250,
+                                height: 120,
                                 legend: { position: 'none' },
                                 pointSize: 5,
                                 hAxis: {
@@ -125,11 +125,12 @@
                                     //gridLines: { color: '#fff' }
                                 },
                                 vAxis: {
-                                    textPosition: 'none',
+                                    textPosition: 'out',
+                                    format:'#,##%'
                                     //gridLines: { color: '#fff' }
                                 },
                                 //backgroundColor: '#ccc',
-                                chartArea: {left: 10},
+                                chartArea: { left: 25, width: 180 },
                             };
 
                             var chart = new google.visualization.LineChart(document.getElementById(chartElementId));
