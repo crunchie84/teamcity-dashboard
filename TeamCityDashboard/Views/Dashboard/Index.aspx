@@ -10,13 +10,17 @@
 <link rel="apple-touch-icon" href="images/q42.png">
 <link rel="stylesheet" href="css/styles.css">
 
-<script src="scripts/jquery.min.js"></script>
-<script src="scripts/jquery.crypt.js"></script>
-<script src="scripts/jquery.timeago.js"></script>
-<script src="scripts/jquery.masonry.min.js"></script>
-<script src="scripts/metro-grid.js"></script>
+<script type="text/javascript" src="scripts/jquery.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.crypt.js"></script>
+<script type="text/javascript" src="scripts/jquery.timeago.js"></script>
+<script type="text/javascript" src="scripts/jquery.masonry.min.js"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="scripts/metro-grid.js"></script>
 
 <script>
+    //load the required charts
+    google.load("visualization", "1", { packages: ["corechart"] });
+
     var lastStr = '';
 
     function loadData(layout) {
@@ -94,9 +98,50 @@
                     $a.addClass('successful')
                     $text.append('<p class=large>' + name + '</p>');
 
-                    if (project.Statistics != null) {
+                    if (project.CoverageGraph != null) {
                         $a.append($extraText);//we have extra info to animate
+                        var chartElementId = 'chart_' + project.Id;
+                        $extraText.append('<div class="chart" id="' + chartElementId + '"/>');
 
+                        //create the graph
+                        setTimeout(function () {
+                            var $chartContainer = $extraText.find('.chart');
+
+                            var dataTable = new google.visualization.DataTable();
+                            dataTable.addColumn('date', 'Report Date');
+                            dataTable.addColumn('number', 'Coverage');
+                            $.each(project.CoverageGraph, function (i, dataRow) {
+                                dataTable.addRow([new Date(parseInt(dataRow[0].substr(6))), dataRow[1]]);
+                            });
+
+
+                            //var data = google.visualization.arrayToDataTable(project.CoverageGraph, false);
+                            var options = {
+                                title: 'Code Coverage',
+                                legend: { position: 'none' },
+                                pointSize: 5,
+                                hAxis: {
+                                    textPosition: 'none',
+                                    //gridLines: { color: '#fff' }
+                                },
+                                vAxis: {
+                                    textPosition: 'none',
+                                    //gridLines: { color: '#fff' }
+                                },
+                                //backgroundColor: '#ccc',
+                                chartArea: {left: 10},
+                            };
+
+                            var chart = new google.visualization.LineChart(document.getElementById(chartElementId));
+                            chart.draw(dataTable, options);
+                        }, 1000);
+
+                    }
+
+
+                    if (project.Statistics != null) {
+                        //$a.append($extraText);//we have extra info to animate
+                        
                         //add statistics to animation
                         $text.append(
                             '<div class="statistics-container">' +
@@ -105,10 +150,10 @@
                             '</div>'
                             );
 
-                        $extraText.append('<div class="statistic PercentageComments">Comments <span class="value">' + project.Statistics.CommentLinesPercentage + '%</span></div>');
-                        $extraText.append('<div class="statistic AmountOfUnitTests">Amount of unit Tests <span class="value">' + project.Statistics.AmountOfUnitTests + '</span></div>');
-                        $extraText.append('<div class="statistic CyclomaticComplexityClass">Average class complexity <span class="value">' + project.Statistics.CyclomaticComplexityClass + '</span></div>');
-                        $extraText.append('<div class="statistic CyclomaticComplexityFunction">Average func complexity <span class="value">' + project.Statistics.CyclomaticComplexityFunction + '</span></div>');
+                        //$extraText.append('<div class="statistic PercentageComments">Comments <span class="value">' + project.Statistics.CommentLinesPercentage + '%</span></div>');
+                        //$extraText.append('<div class="statistic AmountOfUnitTests">Amount of unit Tests <span class="value">' + project.Statistics.AmountOfUnitTests + '</span></div>');
+                        //$extraText.append('<div class="statistic CyclomaticComplexityClass">Average class complexity <span class="value">' + project.Statistics.CyclomaticComplexityClass + '</span></div>');
+                        //$extraText.append('<div class="statistic CyclomaticComplexityFunction">Average func complexity <span class="value">' + project.Statistics.CyclomaticComplexityFunction + '</span></div>');
                     }
                     else {
                         //append buildstep information to animation + summary

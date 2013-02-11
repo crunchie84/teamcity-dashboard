@@ -16,6 +16,12 @@ namespace TeamCityDashboard.Services
     private const string PROJECT_TRENDS_URL = @"/api/resources?resource={0}&metrics={1}&verbose=true&includetrends=true&format=xml";
     private const string PROJECT_METRICS_CSV = @"coverage,class_complexity,function_complexity,ncloc,comment_lines_density,comment_lines,tests";
 
+    /// <summary>
+    /// create coverage csv report
+    /// 2013-01-01T00:00:00+0100
+    /// </summary>
+    private const string PROJECT_TIMEMACHINE_URL = @"/api/timemachine?resource={0}&metrics=coverage&fromDateTime={1}&format=csv";
+
     public ICodeStatistics GetProjectStatistics(string projectKey)
     {
       CodeStatistics result = CacheService.Get<CodeStatistics>("sonar-stats-" + projectKey, () => {
@@ -35,6 +41,17 @@ namespace TeamCityDashboard.Services
       }, 3600);
 
       return result;
+    }
+
+    public IEnumerable<KeyValuePair<DateTime, double>> GetProjectCoverage(string projectKey)
+    {
+      string url = string.Format(CultureInfo.InvariantCulture, PROJECT_TIMEMACHINE_URL, projectKey, DateTime.Now.AddMonths(-2).ToString("s", CultureInfo.InvariantCulture));
+      string csv = GetContents(url);
+
+
+      yield return new KeyValuePair<DateTime, double>(DateTime.Now, 1.2);
+      yield return new KeyValuePair<DateTime, double>(DateTime.Now.AddSeconds(2), 3.4);
+
     }
   }
 }

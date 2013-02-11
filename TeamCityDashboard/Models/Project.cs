@@ -20,5 +20,7 @@ namespace TeamCityDashboard.Models
 
     public string SonarProjectKey { get; set; }
     public ICodeStatistics Statistics{ get; set;}
+
+    public object[][] CoverageGraph { get; set; }
   }
 }

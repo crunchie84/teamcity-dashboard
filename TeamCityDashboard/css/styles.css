@@ -125,7 +125,10 @@ h4,
         float: right; }
   .item .extra-text {
     position: relative;
-    display: none;
+    xdisplay: none;
     padding: 0 20px 10px 20px;
     box-sizing: border-box; }
+    .item .extra-text .chart {
+      width: 200px;
+      height: 100px; }
 

@@ -66,7 +66,8 @@ namespace TeamCityDashboard.Controllers
                                          Url = proj.Url,
                                          LastBuildDate = proj.LastBuildDate,
                                          IconUrl = proj.IconUrl,
-                                         Statistics = string.IsNullOrWhiteSpace(proj.SonarProjectKey) ? (ICodeStatistics)null : SonarDataService.GetProjectStatistics(proj.SonarProjectKey)
+                                         Statistics = string.IsNullOrWhiteSpace(proj.SonarProjectKey) ? (ICodeStatistics)null : SonarDataService.GetProjectStatistics(proj.SonarProjectKey),
+                                         CoverageGraph = string.IsNullOrWhiteSpace(proj.SonarProjectKey) ? null : getProjectGraph(proj.SonarProjectKey)
                                        };
 
       return new JsonResult()
@@ -74,6 +75,26 @@ namespace TeamCityDashboard.Controllers
         JsonRequestBehavior = JsonRequestBehavior.AllowGet,
         ContentEncoding = System.Text.Encoding.UTF8,
         Data = projectsWithSonarDataAdded
+      };
+    }
+
+    private object[][] getProjectGraph(string sonarKey)
+    {
+      var data = SonarDataService.GetProjectCoverage(sonarKey);
+      return (from kvp in data select new object[] { kvp.Key, kvp.Value }).ToArray();
+    }
+
+    [UrlRoute(Name = "projectGraphData", Path = "projectgraph")]
+    [HttpGet()]
+    public ActionResult ProjectGraph(string sonarKey)
+    {
+      var data = SonarDataService.GetProjectCoverage(sonarKey);
+
+      return new JsonResult()
+      {
+        JsonRequestBehavior = JsonRequestBehavior.AllowGet,
+        ContentEncoding = System.Text.Encoding.UTF8,
+        Data = (from kvp in data select new object[]{ kvp.Key, kvp.Value}).ToArray()
       };
     }
 

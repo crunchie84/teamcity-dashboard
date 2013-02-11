@@ -180,8 +180,12 @@ h4,
 	.extra-text
 	{
 		position: relative;
-		display: none;
+		xdisplay: none;
 		padding: 0 20px 10px 20px;
 		box-sizing: border-box;
+		.chart{
+			width: 200px;
+			height: 100px;
+		}
 	}
 }
