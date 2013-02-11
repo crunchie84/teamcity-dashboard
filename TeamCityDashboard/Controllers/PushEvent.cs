@@ -8,6 +8,11 @@ namespace TeamCityDashboard.Models
   public class PushEvent
   {
     /// <summary>
+    ///  The SHA of the HEAD commit on the repository.
+    /// </summary>
+    public string EventId { get; set; }
+
+    /// <summary>
     /// event=>actor=>login
     /// </summary>
     public string ActorUsername { get; set; }

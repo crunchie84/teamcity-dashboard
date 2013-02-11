@@ -36,50 +36,67 @@ namespace TeamCityDashboard.Services
       this.eventsurl = eventsurl;
     }
 
-    public IEnumerable<TeamCityDashboard.Models.PushEvent> GetRecentEvents(bool ignoreEtag=false)
+    /// <summary>
+    /// always returns (max) 5 recent events old -> first ordered
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<TeamCityDashboard.Models.PushEvent> GetRecentEvents()
     {
       try
       {
-        string response = GetEventsApiContents(ignoreEtag);
+        string response = getEventsApiContents();
         if (!string.IsNullOrWhiteSpace(response))
         {
-          List<PushEvent> previousEvents = cacheService.Get<List<PushEvent>>("previous-pushevents", () => new List<PushEvent>(), 60 * 60);
-
-          JArray events = JArray.Parse(response);
-          var parsedEvents= (from evt in events
-                           where (string)evt["type"] == "PushEvent" 
-                           select new PushEvent { 
-                              RepositoryName = (string)evt["repo"]["name"],
-                              BranchName = ((string)evt["payload"]["ref"]).Replace("refs/heads/", ""),
-                              ActorUsername = (string)evt["actor"]["login"],
-                              ActorGravatarId = (string)evt["actor"]["gravatar_id"],
-                              AmountOfCommits = (int)evt["payload"]["size"],
-                              Created = (DateTime)evt["created_at"]
-                           }).ToList();
-
-          IEnumerable<PushEvent> newPushEvents = Enumerable.Empty<PushEvent>();
-          if (parsedEvents.Any()){
-            //return only the new push messages unless we ignore the Etag, then we want all events
-            newPushEvents = parsedEvents.Where(evt => !previousEvents.Any(prev => prev.Created == evt.Created && !ignoreEtag));
-
-            log.DebugFormat("Retrieved {0} new push events from github (ignoredEtag={1})", newPushEvents.Count(), ignoreEtag);
-
-            //save the new retrieved (total) events list for filtering the next results from github
-            cacheService.Set("previous-pushevents", parsedEvents, 60 * 60);
-          }
-
-          return newPushEvents;
+          //parse result, re-cache it
+          var latestPushEvents = parseGithubPushEventsJson(response);
+          cacheService.Set("latest-pushevents", latestPushEvents, WebCacheService.CACHE_PERMANENTLY);
         }
+        return getRecentPushEventsFromCache();
       }
       catch (Exception ex)
       {
         log.Error(ex);
+        return Enumerable.Empty<PushEvent>();
       }
-      return Enumerable.Empty<PushEvent>();
     }
 
-    private string LastReceivedEventsETAG;
-    protected string GetEventsApiContents(bool ignoreEtag)
+    private static List<PushEvent> parseGithubPushEventsJson(string json)
+    {
+      JArray events = JArray.Parse(json);
+      var parsedEvents = (from evt in events
+                          where (string)evt["type"] == "PushEvent"
+                          select new PushEvent
+                          {
+                            RepositoryName = (string)evt["repo"]["name"],
+                            BranchName = ((string)evt["payload"]["ref"]).Replace("refs/heads/", ""),
+                            EventId = evt["id"].ToString(),
+                            ActorUsername = (string)evt["actor"]["login"],
+                            ActorGravatarId = (string)evt["actor"]["gravatar_id"],
+                            AmountOfCommits = (int)evt["payload"]["size"],
+                            Created = (DateTime)evt["created_at"]
+                          });
+
+      log.DebugFormat("Retrieved {0} push events from github", parsedEvents.Count());
+
+      var latestFivePushEvents = parsedEvents.OrderByDescending(pe => pe.Created).Take(5).OrderBy(pe => pe.Created).ToList();
+
+      return latestFivePushEvents;
+    }
+
+    private IEnumerable<PushEvent> getRecentPushEventsFromCache()
+    {
+      var latestPushEvents = cacheService.Get<List<PushEvent>>("latest-pushevents");
+      if (latestPushEvents == null)
+      {
+        log.Error("We could not find pushEvents in the cache AND github did not return any. Possible error?");
+        return Enumerable.Empty<PushEvent>();
+      }
+
+      return latestPushEvents;
+    }
+
+    private string lastReceivedEventsETAG;
+    private string getEventsApiContents(bool ignoreCache=false)
     {
       try
       {
@@ -88,15 +105,15 @@ namespace TeamCityDashboard.Services
         myHttpWebRequest.UserAgent = "TeamCity CI Dashboard - https://github.com/crunchie84/teamcity-dashboard";
         myHttpWebRequest.Headers.Add("Authorization", "bearer " + oauth2token);
 
-        if (!string.IsNullOrWhiteSpace(LastReceivedEventsETAG) && !ignoreEtag)
-          myHttpWebRequest.Headers.Add("If-None-Match", LastReceivedEventsETAG);
+        if (!string.IsNullOrWhiteSpace(lastReceivedEventsETAG) && !ignoreCache)
+          myHttpWebRequest.Headers.Add("If-None-Match", lastReceivedEventsETAG);
 
         using (HttpWebResponse myWebResponse = (HttpWebResponse)myHttpWebRequest.GetResponse())
         {
           if (myWebResponse.StatusCode == HttpStatusCode.OK)
           {
             //if we do not save the returned ETag we will always get the full list with latest changes instead of the real delta since we started polling.
-            LastReceivedEventsETAG = myWebResponse.Headers.Get("ETag");
+            lastReceivedEventsETAG = myWebResponse.Headers.Get("ETag");
 
             using (Stream responseStream = myWebResponse.GetResponseStream())
             {

@@ -160,34 +160,35 @@
             var $eventsContainer = $('#pushMessagesContainer .items');
             var $currentEvents = $eventsContainer.find('.event');
 
-            var fadeOuts = [];
-
-            var newTotal = data.length + $currentEvents.length;
+            var $mappedNewEventsIds = $.map(data, function (pushEvent, i) {
+                return "pushevent_" + pushEvent.EventId;
+            });
 
             // fadeout all items which are the oldest and surplus of 5 (when adding the new items)
-            for (var i = 0; (newTotal - i) > 5 && i < $currentEvents.length ; i++) {
-                (function () {
-                    var $evt = $($currentEvents[4 - i]);
-                    var evtFadeOutDfd = $.Deferred();
-                    fadeOuts.push(evtFadeOutDfd);
+            var $expiredPushEvents = $currentEvents.filter(function (idx){
+                return $.inArray(this.id, $mappedNewEventsIds) == -1;//if not found then we are going to remove it
+            });
 
-                    $evt.fadeOut(400, function () {
-                        this.remove();
-                        evtFadeOutDfd.resolve();
-                    });
-                }());
-            }
+            //this array will contain the promises that all fadeouts are done
+            var fadeOuts = [];
+            $expiredPushEvents.each(function (i, evt) {
+                var evtFadeOutDfd = $.Deferred();
+                fadeOuts.push(evtFadeOutDfd);
+
+                $(evt).fadeOut(400, function () {
+                    this.remove();
+                    evtFadeOutDfd.resolve();
+                });
+            });
 
             $.when.apply($, fadeOuts).then(function () {
                 $.each(data, function (idx, pushEvent) {
-                    //the array of new items is new=>old so we only need the first 5 elements at max (index 4)
-                    if (idx > 4) return false;
-
-                    //this code is not completely correct - it adds new-> old from left->right which means that if multiple pushes happen the order can be incorrect.
-                    //since we mostly fetch 1 new push this will be added correctly. We can always optimize this code later
+                    var eventId = "pushevent_" + pushEvent.EventId;
+                    if (document.getElementById(eventId) != null)
+                        return;
 
                     //create new element
-                    var $a = $('<a href="#" id="" class="item event">');
+                    var $a = $('<a href="#" id="' + eventId + '" class="item event">');
                     //$a.hide();
                     var $text = $('<div class="item-text">');
                     $a.append($text);
@@ -206,7 +207,6 @@
                         });
                     });
                 });
-                //layout();
             });
 
         });
