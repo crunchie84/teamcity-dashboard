@@ -131,7 +131,7 @@
                                     textPosition: 'out',
                                     format: '#,##%'
                                 },
-                                chartArea: { left: 40, width: 200 },
+                                chartArea: { left: 50, width: 190, top: 20, height: 90 },
                             };
 
                             chartsApiLoadedDfd.then(function () {
