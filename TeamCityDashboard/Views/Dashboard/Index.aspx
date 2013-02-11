@@ -178,21 +178,9 @@
 
                     }
 
-                    if (project.Statistics != null) {
-                        //add basic statistics to item box
-                        $text.append(
-                            '<div class="statistics-container">' +
-                            '<p class="small"><span class="statistic LinesOfCode">Lines of code <span class="value">' + project.Statistics.NonCommentingLinesOfCode + '</span></span></p>' +
-                            '<p class="small"><span class="statistic CodeCoveragePercentage">Test coverage <span class="value">' + project.Statistics.CodeCoveragePercentage + '%</span></span></p>' +
-                            '</div>'
-                            );
-                    }
-                    else {
-                        //append last build information to item box
-                        var buildDate = new Date(parseInt(lastBuildDate));
-                        $text.append('<p class="small last-build-date"><em>' + $.timeago(buildDate.toISOString()) + '</em></p>');
-                    }
-
+                    //append last build information to item box
+                    var buildDate = new Date(parseInt(lastBuildDate));
+                    $text.append('<p class="small last-build-date"><em>' + $.timeago(buildDate.toISOString()) + '</em></p>');
                 }
 
                 //last part - add icon if available (always)
