@@ -50,7 +50,7 @@ namespace TeamCityDashboard.Services
       var lines = from line
                      in csv.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Skip(1)
                    let columns = line.Split(',')
-                   select new KeyValuePair<DateTime, double>(parseDateTime(columns.First()), double.Parse(columns.Skip(1).First()));
+                   select new KeyValuePair<DateTime, double>(parseDateTime(columns.First()), double.Parse(columns.Skip(1).First(), CultureInfo.InvariantCulture));
 
       return lines;
       //yield return new KeyValuePair<DateTime, double>(DateTime.Now, 1.2);
