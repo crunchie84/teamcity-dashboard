@@ -18,6 +18,28 @@
 <script type="text/javascript" src="scripts/metro-grid.js"></script>
 
 <script>
+    /*settings for timeago textual tweaks*/
+    jQuery.timeago.settings.strings = {
+        prefixAgo: null,
+        prefixFromNow: null,
+        suffixAgo: "ago",
+        suffixFromNow: "from now",
+        seconds: "± 1 minute",
+        minute: "± 1 minute",
+        minutes: "%d minutes",
+        hour: "1 hour",
+        hours: "%d hours",
+        day: "a day",
+        days: "%d days",
+        month: "a month",
+        months: "%d months",
+        year: "a year",
+        years: "%d years",
+        wordSeparator: " ",
+        numbers: []
+    };
+
+
     //load the required charts
     var chartsApiLoadedDfd = $.Deferred();
     google.load("visualization", "1", { packages: ["corechart"] });
