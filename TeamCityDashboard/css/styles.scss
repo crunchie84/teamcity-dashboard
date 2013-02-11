@@ -100,53 +100,53 @@ h4,
 .item
 {
   float: left;
-	margin-bottom: 10px;
-
-  width: 250px;	/*default width; we try to make them 120 with JS*/
+  margin-bottom: 10px;
+  width: 250px; /*default width; we try to make them 120 with JS*/
   min-height: 120px;
   overflow: hidden;
 
-	&.event
-	{
-		background-color: #1b63e5;
-	}
+  &.event
+  {
+    background-color: #1b63e5;
+  }
 
-	&.successful
-	{
-		background-color: #363;
-		height: 120px;
-	}
+  &.successful
+  {
+    background-color: #363;
+    height: 120px;
+  }
 
-	&.failing
-	{
-		background: #822;
-	}
+  &.failing
+  {
+    background: #822;
+  }
 
   .item-images
   {
     position: relative;
-		margin-bottom: 10px;
+    margin-bottom: 10px;
 
-		&.images-uneven-rows{
-			/* Add extra margin bottom to negate the uneven rows slidly misaligning the blocks*/
-			overflow:hidden;
-			margin-bottom: 5px;
-		}
+    &.images-uneven-rows
+    {
+      /* Add extra margin bottom to negate the uneven rows slidly misaligning the blocks*/
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
 
-		.full-size
-		{
-			display: block;
-			width: 250px;
-			height: 250px;
-		}
+    .full-size
+    {
+      display: block;
+      width: 250px;
+      height: 250px;
+    }
 
-		.half-size
-		{
-			display: block;
-			float: left;
-			width: 125px;
-			height: 125px;
-		}
+    .half-size
+    {
+      display: block;
+      float: left;
+      width: 125px;
+      height: 125px;
+    }
   }
 
   .item-text
@@ -158,41 +158,48 @@ h4,
     box-sizing: border-box;
     height: 120px;
 
-    .logo, 
-		.pusher
+    .last-build-date
     {
-			max-width: 30px;
-			max-height: 30px;
-			position: absolute;
-			bottom: 10px;
-			left:   20px;
+			line-height: 11pt;
     }
-		.statistics-container
-		{
-			.statistic .value
-			{
-				font-size: 11pt;
-				float: right;
-			}
-		}
+
+    .logo,
+    .pusher
+    {
+      max-width: 30px;
+      max-height: 30px;
+      position: absolute;
+      bottom: 10px;
+      left: 20px;
+    }
+
+    .statistics-container
+    {
+      .statistic .value
+      {
+        font-size: 11pt;
+        float: right;
+      }
+    }
   }
 
-	.extra-text
-	{
-		position: relative;
-		display: none;
-		padding: 0;
-		box-sizing: border-box;
+  .extra-text
+  {
+    position: relative;
+    display: none;
+    padding: 0;
+    box-sizing: border-box;
 
-		h3
-		{
-			margin: 10px 0 0 20px;
-			font-weight: normal;
-		}
+    h3
+    {
+      margin: 10px 0 0 20px;
+      font-weight: normal;
+    }
 
-		.chart{
-			width: 250px;
-			height: 85px;
-		}
-	}
+    .chart
+    {
+      width: 250px;
+      height: 85px;
+    }
+  }
 }
