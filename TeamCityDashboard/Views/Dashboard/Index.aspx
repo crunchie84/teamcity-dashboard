@@ -19,7 +19,11 @@
 
 <script>
     //load the required charts
+    var chartsApiLoadedDfd = $.Deferred();
     google.load("visualization", "1", { packages: ["corechart"] });
+    google.setOnLoadCallback(function () {
+        chartsApiLoadedDfd.resolve();
+    });
 
     var lastStr = '';
 
@@ -122,20 +126,19 @@
                                 pointSize: 5,
                                 hAxis: {
                                     textPosition: 'none',
-                                    //gridLines: { color: '#fff' }
                                 },
                                 vAxis: {
                                     textPosition: 'out',
-                                    format:'#,##%'
-                                    //gridLines: { color: '#fff' }
+                                    format: '#,##%'
                                 },
-                                //backgroundColor: '#ccc',
-                                chartArea: { left: 25, width: 180 },
+                                chartArea: { left: 40, width: 200 },
                             };
 
-                            var chart = new google.visualization.LineChart(document.getElementById(chartElementId));
-                            chart.draw(dataTable, options);
-                        }, 1000);
+                            chartsApiLoadedDfd.then(function () {
+                                var chart = new google.visualization.LineChart($chartContainer[0]);
+                                chart.draw(dataTable, options);
+                            });
+                        }, 0);
 
                     }
 
