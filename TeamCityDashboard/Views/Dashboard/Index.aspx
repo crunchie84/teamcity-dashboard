@@ -105,7 +105,7 @@
                     if (project.CoverageGraph != null) {
                         $a.append($extraText);//we have extra info to animate
                         var chartElementId = 'chart_' + project.Id;
-                        $extraText.append('<div class="chart" id="' + chartElementId + '"/>');
+                        $extraText.append('<h3>Code coverage</h3><div class="chart" id="' + chartElementId + '"/>');
 
                         //create the graph
                         setTimeout(function () {
@@ -119,19 +119,33 @@
                             });
 
                             var options = {
-                                title: 'Code Coverage',
                                 width: 250,
-                                height: 120,
+                                height: 85,
+                                backgroundColor: '#363',
+                                colors: ['#fff'],
                                 legend: { position: 'none' },
                                 pointSize: 5,
                                 hAxis: {
                                     textPosition: 'none',
+                                    baselineColor: '#363',
+                                    gridlines: {
+                                        color: '#363'
+                                    }
                                 },
                                 vAxis: {
-                                    textPosition: 'out',
-                                    format: '#,##%'
+                                    textPosition: 'none',
+                                    format: '#,##%',
+                                    baselineColor: '#363',
+                                    gridlines: {
+                                        color: '#363'
+                                    }
                                 },
-                                chartArea: { left: 50, width: 190, top: 20, height: 90 },
+                                chartArea: {
+                                    top: 3,
+                                    left: 10,
+                                    width: 230,
+                                    height: 79
+                                },
                             };
 
                             chartsApiLoadedDfd.then(function () {

@@ -169,7 +169,6 @@ h4,
     }
 		.statistics-container
 		{
-			xfloat: right;
 			.statistic .value
 			{
 				font-size: 11pt;
@@ -185,9 +184,15 @@ h4,
 		padding: 0;
 		box-sizing: border-box;
 
+		h3
+		{
+			margin: 10px 0 0 20px;
+			font-weight: normal;
+		}
+
 		.chart{
 			width: 250px;
-			height: 120px;
+			height: 85px;
 		}
 	}
 }
