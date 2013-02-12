@@ -239,15 +239,10 @@
             });
 
             //this array will contain the promises that all fadeouts are done
-            var fadeOuts = [];
-            $expiredPushEvents.each(function (i, evt) {
-                var evtFadeOutDfd = $.Deferred();
-                fadeOuts.push(evtFadeOutDfd);
-
-                $(evt).fadeOut(400, function () {
+            var fadeOuts = $expiredPushEvents.map(function (evt) {
+                return $(evt).fadeOut(400, function () {
                     this.remove();
-                    evtFadeOutDfd.resolve();
-                });
+                }).promise();
             });
 
             $.when.apply($, fadeOuts).then(function () {
