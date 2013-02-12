@@ -124,7 +124,7 @@
                     $a.addClass('successful')
                     $text.append('<p class=large>' + name + '</p>');
 
-                    if (project.CoverageGraph != null) {
+                    if (project.CoverageGraph != null && project.CoverageGraph.length > 0) {
                         $a.append($extraText);//we have extra info to animate
                         var chartElementId = 'chart_' + project.Id;
                         $extraText.append('<h3>Code coverage</h3><div class="chart" id="' + chartElementId + '"/>');

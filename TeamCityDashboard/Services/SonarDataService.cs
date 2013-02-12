@@ -28,16 +28,20 @@ namespace TeamCityDashboard.Services
         var data = GetPageContents(string.Format(CultureInfo.InvariantCulture, PROJECT_TRENDS_URL, projectKey, PROJECT_METRICS_CSV));
 
         //TODO this code can be greatly improved - error checking etc
-        return new CodeStatistics
+        var stats = new CodeStatistics
         {
           AmountOfUnitTests = (int)double.Parse(data.SelectSingleNode("resources/resource/msr[key='tests']/val").InnerText, CultureInfo.InvariantCulture),
           NonCommentingLinesOfCode = (int)double.Parse(data.SelectSingleNode("resources/resource/msr[key='ncloc']/val").InnerText, CultureInfo.InvariantCulture),
           CommentLines = (int)double.Parse(data.SelectSingleNode("resources/resource/msr[key='comment_lines']/val").InnerText, CultureInfo.InvariantCulture),
           CommentLinesPercentage = double.Parse(data.SelectSingleNode("resources/resource/msr[key='comment_lines_density']/val").InnerText, CultureInfo.InvariantCulture),
           CyclomaticComplexityClass = double.Parse(data.SelectSingleNode("resources/resource/msr[key='class_complexity']/val").InnerText, CultureInfo.InvariantCulture),
-          CyclomaticComplexityFunction = double.Parse(data.SelectSingleNode("resources/resource/msr[key='function_complexity']/val").InnerText, CultureInfo.InvariantCulture),
-          CodeCoveragePercentage = double.Parse(data.SelectSingleNode("resources/resource/msr[key='coverage']/val").InnerText, CultureInfo.InvariantCulture)
+          CyclomaticComplexityFunction = double.Parse(data.SelectSingleNode("resources/resource/msr[key='function_complexity']/val").InnerText, CultureInfo.InvariantCulture)
         };
+
+        if (data.SelectSingleNode("resources/resource/msr[key='coverage']/val") != null)
+          stats.CodeCoveragePercentage = double.Parse(data.SelectSingleNode("resources/resource/msr[key='coverage']/val").InnerText, CultureInfo.InvariantCulture);
+
+        return stats;
       }, 3600);
 
       return result;
