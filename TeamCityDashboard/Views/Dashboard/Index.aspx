@@ -109,7 +109,7 @@
                             $breakers
                               .append('<img src=' + url + ' class='
                                      + (failingSteps.length > 1 || breakers.length > 1 ? 'half-size' : 'full-size')
-                                     + ' alt="' + email + '" title="Breaker: ' + email + '">');
+                                     + ' alt="' + email + '" title="Possibly broken by: ' + email + '">');
                         })
                         if (breakers.length % 2 == 1 && breakers.length > 1)
                             $breakers
