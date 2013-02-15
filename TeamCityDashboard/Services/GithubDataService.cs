@@ -67,7 +67,7 @@ namespace TeamCityDashboard.Services
                           where (string)evt["type"] == "PushEvent"
                           select new PushEvent
                           {
-                            RepositoryName = (string)evt["repo"]["name"],
+                            RepositoryName = ((string) evt["repo"]["name"]).Replace("Q42/", " "),
                             BranchName = ((string)evt["payload"]["ref"]).Replace("refs/heads/", ""),
                             EventId = evt["id"].ToString(),
                             ActorUsername = (string)evt["actor"]["login"],

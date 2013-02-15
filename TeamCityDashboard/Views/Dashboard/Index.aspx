@@ -74,21 +74,29 @@
                     return;//skip this one, its the same
 
                 //okay; it is new or different; start creation of element
-                var $a = $('<a href="' + project.Url + '" id=' + project.Id + ' class="item" data-last-builddate="' + lastBuildDate + '">');
+                var $a = $('<div href="' + project.Url + '" id=' + project.Id + ' class="item" data-last-builddate="' + lastBuildDate + '">');
 
                 var $text = $('<div class="item-text">');
+                var $container = $('<div class="details"/>');
                 var $extraText = $('<div class=extra-text>');
                 $a.append($text);
+
+                //first part - add icon if available (always)
+                if (project.IconUrl != null) {
+                  $text.prepend('<img src="' + project.IconUrl + '" class="logo" />');
+                }
+
+                $text.append($container);
 
                 var failingSteps = project.BuildConfigs.filter(function (s) { return !s.CurrentBuildIsSuccesfull });
                 if (failingSteps.length) {
                     $a.addClass('failing');
-                    $text.append('<p><span class=large>' + name + '</p>');
+                    $container.append('<p class=large>' + name + '</p>');
 
                     var allBreakers = [];
 
                     $.each(failingSteps, function (_, step) {
-                        $text.append('<p id=' + step.Id + ' class=small>'
+                      $container.append('<p id=' + step.Id + ' class=small>'
                                      + '<a href="' + step.Url + '">' + step.Name + '</a></p>');
 
                         var $breakers = $('<div class=item-images>');
@@ -122,7 +130,7 @@
                 }
                 else {
                     $a.addClass('successful')
-                    $text.append('<p class=large>' + name + '</p>');
+                    $container.append('<p class=large>' + name + '</p>');
 
                     if (project.CoverageGraph != null && project.CoverageGraph.length > 0) {
                         $a.append($extraText);//we have extra info to animate
@@ -180,12 +188,7 @@
 
                     //append last build information to item box
                     var buildDate = new Date(parseInt(lastBuildDate));
-                    $text.append('<p class="small last-build-date"><em title="' + buildDate.toISOString() + '">' + buildDate.toISOString() + '</em></p>');
-                }
-
-                //last part - add icon if available (always)
-                if (project.IconUrl != null) {
-                    $text.append('<img src="' + project.IconUrl + '" class="logo" />');
+                    $container.append('<p class="small last-build-date"><span title="' + buildDate.toISOString() + '">' + buildDate.toISOString() + '</span></p>');
                 }
 
                 //add or re-add element
@@ -203,7 +206,7 @@
                 //now try if it can be smaller - depends on being attached to the DOM
                 if ($a.hasClass('successful')) {
                     //now activate the timeago ticker
-                    $a.find('.last-build-date em').timeago();
+                    $a.find('.last-build-date span').timeago();
 
                     $a.width(120);
                     var overflows = $a.find('.item-text p')[0].scrollWidth > $a.find('.item-text p')[0].clientWidth;
@@ -252,17 +255,20 @@
                         return;
 
                     //create new element
-                    var $a = $('<a href="#" id="' + eventId + '" class="item event">');
+                    var $a = $('<div href="#" id="' + eventId + '" class="item event">');
                     //$a.hide();
                     var $text = $('<div class="item-text">');
+                    var $container = $('<div class="details"/>');
                     $a.append($text);
                     var created = new Date(parseInt(pushEvent.Created.substr(6)));
                     var formatted = "" + (created.getHours() < 10 ? "0" + created.getHours() : "" + created.getHours());
                     formatted += ':' + (created.getMinutes() < 10 ? "0" + created.getMinutes() : "" + created.getMinutes());
 
-                    $text.append('<p class=large>' + formatted + ' - ' + pushEvent.RepositoryName + '</p>');
-                    $text.append('<div class="event-info"><p class="small">' + pushEvent.ActorUsername + ' pushed ' + pushEvent.AmountOfCommits + ' commits to branch <em>' + pushEvent.BranchName + '</em></p></div>');
-                    $text.append('<img src="http://www.gravatar.com/avatar/' + pushEvent.ActorGravatarId + '?s=500" class="pusher"/>');
+                    $text.append('<img src="http://www.gravatar.com/avatar/' + pushEvent.ActorGravatarId + '?s=500" class="pusher" title="' + pushEvent.ActorUsername + '"/>');
+                    $text.append($container);
+                    $container.append('<p class=large>' + pushEvent.RepositoryName + ' - ' + formatted + '</p>');
+                    $container.append('<div class="event-info"><p class="small">' + pushEvent.BranchName + ' (' + pushEvent.AmountOfCommits + ' commits)</p></div>');
+                    
 
                     //simple animation
                     $a.fadeOut(0, function () {
@@ -279,7 +285,7 @@
 </script>
 
 <div id="title">
-  <h1>Q42 Continuous Integration</h1>
+  <h2>Q42 Continuous Integration</h2>
 </div>
 
 <div id="projectsContainer">
