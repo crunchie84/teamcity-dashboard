@@ -26,52 +26,48 @@ h1,
 .xx-large {
   font-family: Segoe UI Light, Sans-Serif;
   font-size: 42pt;
-  margin: -15px 3px 16px -3px;
-  /* Use margin to fix baseline */
-  line-height: 48pt; }
+  line-height: 48pt;
+  margin: 0; }
 
 h2,
 .x-large {
   font-family: Segoe UI Light, Sans-Serif;
   font-size: 20pt;
-  margin: -7px 2px 7px -2px;
-  /* Use margin to fix baseline */
-  line-height: 24pt; }
+  line-height: 24pt;
+  margin: 0; }
 
 h3,
 .large {
   font-family: Segoe UI, Sans-Serif;
-  font-size: 11pt;
-  margin: 4px 0 -4px 0;
-  /* Use margin-top to fix baseline */
-  line-height: 15pt; }
+  font-size: 20px;
+  line-height: 22px;
+  margin: 0;
+  letter-spacing: 1px; }
 
 p,
 .medium {
-  font-family: Segoe UI, Sans-Serif;
+  font-family: Arial, Segoe UI, Sans-Serif;
   font-size: 11pt;
-  margin: 4px 2px -4px -2px;
-  /* Use margin to fix baseline */
   line-height: 15pt; }
 
 h4,
 .small {
-  font-family: Segoe UI, Sans-Serif;
-  font-size: 9pt;
+  font-family: Arial, Segoe UI, Sans-Serif;
+  font-size: 10pt;
   font-weight: normal;
-  margin: 5px 2px -5px -2px;
-  /* Use margin to fix baseline */
   line-height: 15pt; }
 
 #title {
-  margin: 60px 0 0 100px; }
+  margin: 20px 0 10px 100px; }
 
 #projectsContainer {
   margin-left: 100px;
   margin-right: 100px; }
 
 #pushMessagesContainer {
-  margin: 20px 100px 0 100px; }
+  margin: 20px 0 0 100px; }
+  #pushMessagesContainer h2 {
+    margin-bottom: 10px; }
   #pushMessagesContainer .item {
     margin-right: 10px; }
 
@@ -83,7 +79,7 @@ h4,
   min-height: 120px;
   overflow: hidden; }
   .item.event {
-    background-color: #1b63e5; }
+    background-color: rgba(6, 82, 196, 0.8); }
   .item.successful {
     background-color: #363;
     height: 120px; }
@@ -109,18 +105,22 @@ h4,
     position: relative;
     clear: left;
     display: block;
-    padding: 7px 20px 10px 20px;
+    padding: 10px 10px 5px 10px;
     box-sizing: border-box;
-    height: 120px; }
-    .item .item-text .last-build-date {
-      line-height: 11pt; }
+    height: 120px;
+    overflow: hidden; }
+    .item .item-text .details {
+      float: left;
+      width: 145px; }
+      .item .item-text .details .small {
+        line-height: 14pt;
+        margin: 5px 0; }
     .item .item-text .logo,
     .item .item-text .pusher {
-      max-width: 30px;
-      max-height: 30px;
-      position: absolute;
-      bottom: 10px;
-      left: 20px; }
+      margin: 0 15px 5px 0;
+      max-width: 60px;
+      max-height: 60px;
+      float: left; }
     .item .item-text .statistics-container .statistic .value {
       font-size: 11pt;
       float: right; }
