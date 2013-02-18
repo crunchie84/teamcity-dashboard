@@ -65,22 +65,31 @@ namespace TeamCityDashboard.Services
       JArray events = JArray.Parse(json);
       var parsedEvents = (from evt in events
                           where (string)evt["type"] == "PushEvent"
-                          select new PushEvent
-                          {
-                            RepositoryName = ((string) evt["repo"]["name"]).Replace("Q42/", " "),
-                            BranchName = ((string)evt["payload"]["ref"]).Replace("refs/heads/", ""),
-                            EventId = evt["id"].ToString(),
-                            ActorUsername = (string)evt["actor"]["login"],
-                            ActorGravatarId = (string)evt["actor"]["gravatar_id"],
-                            AmountOfCommits = (int)evt["payload"]["size"],
-                            Created = (DateTime)evt["created_at"]
-                          });
+                          select parseGithubPushEvent(evt));
 
       log.DebugFormat("Retrieved {0} push events from github", parsedEvents.Count());
 
       var latestFivePushEvents = parsedEvents.OrderByDescending(pe => pe.Created).Take(5).OrderBy(pe => pe.Created).ToList();
 
       return latestFivePushEvents;
+    }
+
+    private static PushEvent parseGithubPushEvent(JToken evt)
+    {
+      string repositoryName = ((string) evt["repo"]["name"]);
+      if(repositoryName.Contains('/'))
+        repositoryName = repositoryName.Substring(1 + repositoryName.IndexOf('/'));
+
+      return new PushEvent
+                          {
+                            RepositoryName = repositoryName,
+                            BranchName = ((string)evt["payload"]["ref"]).Replace("refs/heads/", ""),
+                            EventId = evt["id"].ToString(),
+                            ActorUsername = (string)evt["actor"]["login"],
+                            ActorGravatarId = (string)evt["actor"]["gravatar_id"],
+                            AmountOfCommits = (int)evt["payload"]["size"],
+                            Created = (DateTime)evt["created_at"]
+                          };
     }
 
     private IEnumerable<PushEvent> getRecentPushEventsFromCache()
