@@ -282,6 +282,24 @@
         });
         window.setTimeout(loadEvents.bind(this, layout), 10 * 1000);
     }
+
+
+    var currentVersion = "";
+    /*
+    easy function / ticker which automatically reloads the dashboard after a new deploy
+    */
+    function versionTicker() {
+        $.getJSON("version").done(function (data) {
+            if (currentVersion == "") {
+                console.log('current dashboard version', data);
+                currentVersion = data;
+            }
+            else if (currentVersion != data) {
+                window.location.reload();
+            }
+        });
+        window.setTimeout(versionTicker, 10 * 1000);
+    }
 </script>
 
 <div id="title">
@@ -319,4 +337,6 @@
     loadEvents(function () {
         //we do not use masonry on the push events for now
     });
+
+    versionTicker();
 </script>

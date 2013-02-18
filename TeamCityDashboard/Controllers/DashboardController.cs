@@ -7,6 +7,8 @@ using ITCloud.Web.Routing;
 using TeamCityDashboard.Interfaces;
 using TeamCityDashboard.Services;
 using System.Configuration;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace TeamCityDashboard.Controllers
 {
@@ -15,6 +17,21 @@ namespace TeamCityDashboard.Controllers
     private static TeamCityDataService TeamCityDataService = null;
     private static SonarDataService SonarDataService = null;
     private static GithubDataService GithubDataService = null;
+
+    private static string _version;
+    public string ProjectVersion
+    {
+      get
+      {
+        if (string.IsNullOrWhiteSpace(_version))
+        {
+          _version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+          if (string.IsNullOrWhiteSpace(_version))
+            _version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        }
+        return _version;
+      }
+    }
 
     public DashboardController()
     {
@@ -47,9 +64,21 @@ namespace TeamCityDashboard.Controllers
         GithubDataService = new TeamCityDashboard.Services.GithubDataService(
           (string)ConfigurationManager.AppSettings["github.oauth2token"],
           (string)ConfigurationManager.AppSettings["github.api.events.url"]
-          ,cacheService
+          , cacheService
         );
       }
+    }
+
+    [UrlRoute(Name = "VersionString", Path = "version")]
+    [HttpGet()]
+    public ActionResult Version()
+    {
+      return new JsonResult()
+      {
+        JsonRequestBehavior = JsonRequestBehavior.AllowGet,
+        ContentEncoding = System.Text.Encoding.UTF8,
+        Data = ProjectVersion
+      };
     }
 
     [UrlRoute(Name = "Data", Path = "data")]
@@ -94,7 +123,7 @@ namespace TeamCityDashboard.Controllers
       {
         JsonRequestBehavior = JsonRequestBehavior.AllowGet,
         ContentEncoding = System.Text.Encoding.UTF8,
-        Data = (from kvp in data select new object[]{ kvp.Key, kvp.Value}).ToArray()
+        Data = (from kvp in data select new object[] { kvp.Key, kvp.Value }).ToArray()
       };
     }
 
@@ -102,12 +131,12 @@ namespace TeamCityDashboard.Controllers
     [HttpGet()]
     public ActionResult PushEvents()
     {
-       return new JsonResult()
-      {
-        JsonRequestBehavior = JsonRequestBehavior.AllowGet,
-        ContentEncoding = System.Text.Encoding.UTF8,
-        Data = GithubDataService.GetRecentEvents()
-      };
+      return new JsonResult()
+     {
+       JsonRequestBehavior = JsonRequestBehavior.AllowGet,
+       ContentEncoding = System.Text.Encoding.UTF8,
+       Data = GithubDataService.GetRecentEvents()
+     };
     }
 
     [UrlRoute(Name = "Home", Path = "")]
