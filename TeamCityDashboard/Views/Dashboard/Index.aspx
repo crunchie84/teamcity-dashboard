@@ -209,7 +209,7 @@
                     $a.find('.last-build-date span').timeago();
 
                     $a.width(120);
-                    var overflows = $a.find('.item-text p')[0].scrollWidth > $a.find('.item-text p')[0].clientWidth;
+                    var overflows = $a.find('.item-text .details p')[0].scrollWidth > $a.find('.item-text .details p')[0].clientWidth;
                     var hasStatistics = $a.find('.item-text .statistics-container').length;
                     var hasChart = $a.find('.extra-text .chart').length;
                     var textOverflowsIcon = $a.find('.item-text .logo').length && ( $a.find('.item-text .small').position().top + $a.find('.item-text .small').height() >= 80);
