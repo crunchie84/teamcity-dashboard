@@ -101,12 +101,18 @@
 
                         var $breakers = $('<div class=item-images>');
                         var breakers = step.PossibleBuildBreakerEmailAddresses;
+                        var amountOfRows = Math.ceil(breakers.length / 2);
 
-                        if (breakers.length > 1 && (breakers.length / 2) % 2 > 0) {
-                            /* we have an uneven amount of rows and small images */
-                            $breakers.addClass('images-uneven-rows');
+                        if (breakers.length > 1) {
+                            //we have small images, fix the height of the container and optionally add spacer image
+                            $breakers.height(amountOfRows * 125);//images are 125px height
+                            if(amountOfRows % 2 > 0) {
+                                /* we have an uneven amount of rows and small images */
+                                $breakers.addClass('images-uneven-rows');
+                            }
                         }
 
+                        //append all breaker images to the container
                         $.each(breakers, function (_, email) {
                             var emailHash = $().crypt({ method: 'md5', source: email });
                             var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=500';
