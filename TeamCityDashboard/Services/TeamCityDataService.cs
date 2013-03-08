@@ -63,8 +63,10 @@ namespace TeamCityDashboard.Services
       var failing = projects.Where(p => p.BuildConfigs.Any(c => !c.CurrentBuildIsSuccesfull));
       var success = projects.Where(p => p.BuildConfigs.All(c => c.CurrentBuildIsSuccesfull));
 
-      //only display the most recent 15 build projects together with the failing ones
-      return failing.Concat(success.OrderByDescending(p => p.LastBuildDate).Take(15));
+      int amountToTake = Math.Max(15, failing.Count());
+
+      //only display the most recent 15 build projects together with the failing ones OR if we have more failing display those
+      return failing.Concat(success.OrderByDescending(p => p.LastBuildDate)).Take(amountToTake);
     }
 
     private IEnumerable<IProject> getNonArchivedProjects()
