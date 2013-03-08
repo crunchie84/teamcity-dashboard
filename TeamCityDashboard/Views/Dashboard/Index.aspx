@@ -200,13 +200,22 @@
                 //add or re-add element
                 if ($oldItem.length == 1) {
                     $oldItem.fadeOut(400, function () {
-                        //this.remove();
-                        $buildConfigsContainer.masonry('remove', $oldItem);
-                        $buildConfigsContainer.prepend($a).masonry('reload');
+                        if (masonryInitialized) {
+                            $buildConfigsContainer.masonry('remove', $oldItem);
+                        }
+
+                        var newEl = $buildConfigsContainer.prepend($a);
+
+                        if (masonryInitialized) {
+                            newEl.masonry('reload');
+                        }
                     });
                 }
                 else {
-                    $buildConfigsContainer.append($a).masonry('reload');
+                    var newEl = $buildConfigsContainer.append($a);
+                    if (masonryInitialized) {
+                        newEl.masonry('reload');
+                    }
                 }
 
                 //now try if it can be smaller - depends on being attached to the DOM
@@ -327,6 +336,8 @@
     grid.init($('#projectsContainer'));
     grid.animate();
 
+    var masonryInitialized = false;
+
     loadData(function () {
         var $container = $('#projectsContainer');
         $container.imagesLoaded(function () {
@@ -337,6 +348,7 @@
                 isResizable: true,
                 isAnimated: true
             });
+            masonryInitialized = true;
         });
     });
 
