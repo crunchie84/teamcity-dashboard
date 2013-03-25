@@ -257,8 +257,8 @@
             });
 
             //this array will contain the promises that all fadeouts are done
-            var fadeOuts = $expiredPushEvents.map(function (evt) {
-                return $(evt).fadeOut(400, function () {
+            var fadeOuts = $.map($expiredPushEvents, function (expiredEvent, i) {
+                return $(expiredEvent).fadeOut(400, function () {
                     this.remove();
                 }).promise();
             });
