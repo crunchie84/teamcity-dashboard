@@ -39,7 +39,6 @@
         numbers: []
     };
 
-
     //load the required charts
     var chartsApiLoadedDfd = $.Deferred();
     google.load("visualization", "1", { packages: ["corechart"] });
@@ -51,18 +50,11 @@
 
     function loadData(layout) {
         $.getJSON("data").done(function (data) {
-            // // Random bugs!
-            // var p = data[Math.floor(Math.random() * data.length)];
-            // console.log(p);
-            // p.BuildConfigs[Math.floor(Math.random() * p.BuildConfigs.length)].CurrentBuildIsSuccesfull = false;
-
             var str = JSON.stringify(data);
             if (str == lastStr) return; // nothing changed
             lastStr = str;
 
             var $buildConfigsContainer = $('#projectsContainer');
-            //cleanup old stuff
-            //$buildConfigsContainer.find('.item').remove();
 
             $.each(data, function (_, project) {
                 var name = project.Name;
@@ -259,7 +251,7 @@
             //this array will contain the promises that all fadeouts are done
             var fadeOuts = $.map($expiredPushEvents, function (expiredEvent, i) {
                 return $(expiredEvent).fadeOut(400, function () {
-                    this.remove();
+                    $(this).remove();
                 }).promise();
             });
 
@@ -298,11 +290,10 @@
         window.setTimeout(loadEvents.bind(this, layout), 10 * 1000);
     }
 
-
-    var currentVersion = "";
     /*
     easy function / ticker which automatically reloads the dashboard after a new deploy
     */
+    var currentVersion = "";
     function versionTicker() {
         $.getJSON("version").done(function (data) {
             if (currentVersion == "") {
@@ -313,17 +304,16 @@
                 window.location.reload();
             }
         });
-        window.setTimeout(versionTicker, 10 * 1000);
+        window.setTimeout(versionTicker, 30 * 1000);
     }
 </script>
 
 <div id="title">
-  <h2>Q42 Continuous Integration</h2>
+  <h2>Actual Continuous Integration Status</h2>
 </div>
 
 <div id="projectsContainer">
 </div>
-
 
 
 <div id="pushMessagesContainer">
