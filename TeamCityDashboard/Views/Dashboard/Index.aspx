@@ -86,45 +86,46 @@
                     $container.append('<p class=large>' + name + '</p>');
 
                     var allBreakers = [];
+                    var $breakers = $('<div class=item-images>');
 
                     $.each(failingSteps, function (_, step) {
                       $container.append('<p id=' + step.Id + ' class=small>'
                                      + '<a href="' + step.Url + '">' + step.Name + '</a></p>');
 
-                        var $breakers = $('<div class=item-images>');
-                        var breakers = step.PossibleBuildBreakerEmailAddresses;
-                        var amountOfRows = Math.ceil(breakers.length / 2);
+                      allBreakers = allBreakers.concat(step.PossibleBuildBreakerEmailAddresses);
+                    });
 
-                        if (breakers.length > 1) {
-                            //we have small images, fix the height of the container and optionally add spacer image
-                            $breakers.height(amountOfRows * 125);//images are 125px height
-                            if(amountOfRows % 2 > 0) {
-                                /* we have an uneven amount of rows and small images */
-                                $breakers.addClass('images-uneven-rows');
-                            }
+                    //make unique list of breakers
+                    var uniqueBreakers = $.grep(allBreakers, function (v, k) {
+                        return $.inArray(v, allBreakers) === k;
+                    });
+
+                    //append all breaker images to the container
+                    $.each(uniqueBreakers, function (_, email) {
+                        var emailHash = $().crypt({ method: 'md5', source: email });
+                        var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=500';
+
+                        $breakers.append('<img src=' + url + ' class='
+                                 + (failingSteps.length > 1 || uniqueBreakers.length > 1 ? 'half-size' : 'full-size')
+                                 + ' alt="' + email + '" title="Possibly broken by: ' + email + '">');
+                    });
+
+                    var amountOfRows = Math.ceil(uniqueBreakers.length / 2);
+                    if (uniqueBreakers.length > 1) {
+                        //we have small images, fix the height of the container and optionally add spacer image
+                        $breakers.height(amountOfRows * 125);//images are 125px height
+                        if (amountOfRows % 2 > 0) {
+                            /* we have an uneven amount of rows and small images */
+                            $breakers.addClass('images-uneven-rows');
                         }
 
-                        //append all breaker images to the container
-                        $.each(breakers, function (_, email) {
-                            var emailHash = $().crypt({ method: 'md5', source: email });
-                            var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=500';
+                        if (uniqueBreakers.length % 2 == 1)
+                            $breakers.append('<img src=images/transparent.gif class=half-size>');
+                    }
 
-                            if (allBreakers.indexOf(email) >= 0) return;
-                            allBreakers.push(email);
-
-                            $breakers
-                              .append('<img src=' + url + ' class='
-                                     + (failingSteps.length > 1 || breakers.length > 1 ? 'half-size' : 'full-size')
-                                     + ' alt="' + email + '" title="Possibly broken by: ' + email + '">');
-                        })
-                        if (breakers.length % 2 == 1 && breakers.length > 1)
-                            $breakers
-                              .append('<img src=images/transparent.gif class=half-size>');
-
-                        //put the breaking peope images on top inside the project element if there are any
-                        if(breakers.length > 0)
-                            $a.prepend($breakers);
-                    });
+                    //put the breaking peope images on top inside the project element if there are any
+                    if (uniqueBreakers.length > 0)
+                        $a.prepend($breakers);
                 }
                 else {
                     $a.addClass('successful')
