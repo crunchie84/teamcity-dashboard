@@ -331,16 +331,14 @@
 
     loadData(function () {
         var $container = $('#projectsContainer');
-        $container.imagesLoaded(function () {
-            $container.masonry({
-                itemSelector: '.item',
-                gutterWidth: 10,
-                columnWidth: 120,
-                isResizable: true,
-                isAnimated: true
-            });
-            masonryInitialized = true;
+        $container.masonry({
+            itemSelector: '.item',
+            gutterWidth: 10,
+            columnWidth: 120,
+            isResizable: true,
+            isAnimated: true
         });
+        masonryInitialized = true;
     });
 
     loadEvents(function () {
