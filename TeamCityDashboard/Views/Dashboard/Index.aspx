@@ -106,7 +106,7 @@
                         var url = 'http://www.gravatar.com/avatar/' + emailHash + '?s=500';
 
                         $breakers.append('<img src=' + url + ' class='
-                                 + (failingSteps.length > 1 || uniqueBreakers.length > 1 ? 'half-size' : 'full-size')
+                                 + (uniqueBreakers.length > 1 ? 'half-size' : 'full-size')
                                  + ' alt="' + email + '" title="Possibly broken by: ' + email + '">');
                     });
 
