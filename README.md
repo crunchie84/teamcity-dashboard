@@ -1,5 +1,7 @@
-teamcity-dashboard
+Teamcity Dashboard
 ========
+:warning: This project has not been updated in 5 years. YMMV.
+
 Dashboard to display useful information from TeamCity and if available merges it with Sonar results. If somebody broke the build it tries to display their gravatar.
 
 Installation
