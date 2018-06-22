@@ -89,6 +89,7 @@ namespace TeamCityDashboard.Controllers
                                        select new TeamCityDashboard.Models.Project
                                        {
                                          Id = proj.Id,
+                                         ParentProjectId = proj.ParentProjectId,
                                          Name = proj.Name,
                                          BuildConfigs = proj.BuildConfigs,
                                          SonarProjectKey = proj.SonarProjectKey,

@@ -58,8 +58,11 @@
 
             $.each(data, function (_, project) {
                 var name = project.Name;
+                var parentId = project.ParentProjectId;
                 var id = project.Id;
-                var lastBuildDate = project.LastBuildDate.substr(6, 13);
+                var lastBuildDate = project.LastBuildDate;
+                if (lastBuildDate != null)
+                    lastBuildDate = project.LastBuildDate.substr(6, 13);                
 
                 var $oldItem = $('#' + id);
                 if ($oldItem.length > 0 && $oldItem.attr('data-last-builddate') == lastBuildDate)
@@ -83,6 +86,8 @@
                 var failingSteps = project.BuildConfigs.filter(function (s) { return !s.CurrentBuildIsSuccesfull });
                 if (failingSteps.length) {
                     $a.addClass('failing');
+                    if (parentId !== "_Root")
+                        $container.append('<p class=large>' + parentId + '</p>');
                     $container.append('<p class=large>' + name + '</p>');
 
                     var allBreakers = [];
@@ -128,7 +133,9 @@
                         $a.prepend($breakers);
                 }
                 else {
-                    $a.addClass('successful')
+                    $a.addClass('successful');
+                    if (parentId !== "_Root")
+                        $container.append('<p class=large>' + parentId + '</p>');
                     $container.append('<p class=large>' + name + '</p>');
 
                     if (project.CoverageGraph != null && project.CoverageGraph.length > 0) {
@@ -186,8 +193,10 @@
                     }
 
                     //append last build information to item box
-                    var buildDate = new Date(parseInt(lastBuildDate));
-                    $container.append('<p class="small last-build-date"><span title="' + buildDate.toISOString() + '">' + buildDate.toISOString() + '</span></p>');
+                    if (lastBuildDate != null) {
+                        var buildDate = new Date(parseInt(lastBuildDate));
+                        $container.append('<p class="small last-build-date"><span title="' + buildDate.toISOString() + '">' + buildDate.toISOString() + '</span></p>');
+                    }
                 }
 
                 //add or re-add element
@@ -318,7 +327,7 @@
 
 
 <div id="pushMessagesContainer">
-    <h2>Pushes to GitHub</h2>
+    <h2>Pushes to Git</h2>
     <div class="items"></div>
 </div>
 

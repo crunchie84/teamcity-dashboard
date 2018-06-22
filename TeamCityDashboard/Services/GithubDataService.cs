@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -19,8 +20,6 @@ namespace TeamCityDashboard.Services
     private readonly ICacheService cacheService;
     private readonly string oauth2token;
     private readonly string eventsurl;
-
-    private const string API_BASE_URL = @"https://api.github.com";
 
     public GithubDataService(string oauth2token, string eventsurl, ICacheService cacheService)
     {
@@ -109,7 +108,8 @@ namespace TeamCityDashboard.Services
     {
       try
       {
-        Uri uri = new Uri(string.Format("{0}{1}", API_BASE_URL, eventsurl));
+          var gitRepoUrl = ConfigurationManager.AppSettings["GitRepositoryUrl"];
+        Uri uri = new Uri(string.Format("{0}{1}", gitRepoUrl, eventsurl));
         HttpWebRequest myHttpWebRequest = (HttpWebRequest)HttpWebRequest.Create(uri);
         myHttpWebRequest.UserAgent = "TeamCity CI Dashboard - https://github.com/crunchie84/teamcity-dashboard";
         myHttpWebRequest.Headers.Add("Authorization", "bearer " + oauth2token);
